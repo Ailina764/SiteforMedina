@@ -1,6 +1,6 @@
 'use client'
 
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { ArrowRight, ArrowUpRight, Lock, Menu, Send, X } from 'lucide-react'
 
 const biography = `Я развиваюсь в сфере лидерства и постоянно работаю над собой. Мечта стать президентом школы для меня — это осознанный шаг и желание сделать нашу школьную жизнь лучше.`
@@ -9,10 +9,46 @@ const MEDINA_WHATSAPP = '77021366520'
 const IDEA_LIMIT = 500
 
 const programCards = [
-  { id: 'study', tone: 'blue', icon: '/program/book.png', title: 'Учёба и комфорт', text: 'Комфортные зоны отдыха и поддержка инициатив учеников.' },
-  { id: 'events', tone: 'violet', icon: '/program/calendar.png', title: 'Досуг и мероприятия', text: 'Яркие праздники, тематические дни и школьные традиции.' },
-  { id: 'sport', tone: 'cyan', icon: '/program/ball.png', title: 'Спорт и активность', text: 'Межклассные турниры и спортивные ивенты для разных интересов.' },
-  { id: 'dialog', tone: 'amber', icon: '/program/people.png', title: 'Связь с администрацией', text: 'Открытый диалог с учителями через школьный совет.' },
+  {
+    id: 'study', tone: 'blue', icon: '/program/book.png', title: 'Учёба и комфорт', text: 'Комфортные зоны отдыха и поддержка инициатив учеников.',
+    intro: 'В школе мы проводим большую часть дня, поэтому здесь должно быть удобно и учиться, и отдыхать.',
+    points: [
+      ['Зоны отдыха', 'Уютные места в коридорах: пуфы, настольные игры и розетки, чтобы зарядить телефон на перемене.'],
+      ['Помощь с учёбой', 'Клуб взаимопомощи: старшеклассники помогают младшим разобраться в трудных темах перед контрольными.'],
+      ['Голос учеников', 'Опрос раз в четверть: вы сами выбираете, что в школе улучшить в первую очередь.'],
+      ['Ваши проекты', 'Помогу с кружками и идеями учеников: найти кабинет, время и учителя-куратора.'],
+    ],
+  },
+  {
+    id: 'events', tone: 'violet', icon: '/program/calendar.png', title: 'Досуг и мероприятия', text: 'Яркие праздники, тематические дни и школьные традиции.',
+    intro: 'Школьные будни станут ярче, если в каждой четверти будет событие, которого все ждут.',
+    points: [
+      ['Тематические дни', 'День национального костюма, день ретро, день любимого героя и другие дни, которые предложите вы.'],
+      ['Праздники', 'Наурыз, Новый год, День учителя и 8 Марта с концертами, ярмарками и фотозонами.'],
+      ['Новые традиции', 'Ежегодный конкурс талантов и большой школьный вечер, которые будут ждать каждый год.'],
+      ['Музыка на переменах', 'Школьное радио с песнями по заявкам учеников.'],
+    ],
+  },
+  {
+    id: 'sport', tone: 'cyan', icon: '/program/ball.png', title: 'Спорт и активность', text: 'Межклассные турниры и спортивные ивенты для разных интересов.',
+    intro: 'Спорт объединяет классы и помогает найти друзей не только среди одноклассников.',
+    points: [
+      ['Турниры между классами', 'Футбол, волейбол и баскетбол каждую четверть, с таблицей результатов для всей школы.'],
+      ['Игры для ума', 'Турниры по шахматам и тогыз кумалак для тех, кто любит думать.'],
+      ['День спорта', 'Эстафеты и весёлые старты, где в командах вместе и младшие, и старшие.'],
+      ['Награды', 'Грамоты и призы лучшим командам, игрокам и самым громким болельщикам.'],
+    ],
+  },
+  {
+    id: 'dialog', tone: 'amber', icon: '/program/people.png', title: 'Связь с администрацией', text: 'Открытый диалог с учителями через школьный совет.',
+    intro: 'Президент школы — это мост между учениками и администрацией. Каждый должен быть услышан.',
+    points: [
+      ['Школьный совет', 'Представитель от каждого класса и встречи раз в месяц, где обсуждаем ваши вопросы.'],
+      ['Честные отчёты', 'После каждой встречи рассказываю, что решили и что уже получилось.'],
+      ['Встречи с директором', 'Открытые встречи, где ученики могут задать вопрос напрямую.'],
+      ['Всегда на связи', 'Любую проблему или идею можно написать мне через форму ниже.'],
+    ],
+  },
 ]
 
 function Sparkle({ className }: { className?: string }) {
@@ -33,8 +69,19 @@ export default function Page() {
   const [idea, setIdea] = useState('')
   const [ideaStatus, setIdeaStatus] = useState<'idle' | 'empty' | 'sent'>('idle')
   const ideaField = useRef<HTMLTextAreaElement>(null)
+  const [openCard, setOpenCard] = useState<string | null>(null)
+
+  useEffect(() => {
+    if (!openCard) return
+    const onKey = (event: KeyboardEvent) => { if (event.key === 'Escape') setOpenCard(null) }
+    document.addEventListener('keydown', onKey)
+    document.body.style.overflow = 'hidden'
+    document.querySelector<HTMLButtonElement>(`#modal-${openCard} .program-modal-close`)?.focus()
+    return () => { document.removeEventListener('keydown', onKey); document.body.style.overflow = '' }
+  }, [openCard])
 
   function pickTopic(title: string) {
+    setOpenCard(null)
     const prefix = `${title}: `
     setIdea((current) => (current.startsWith(prefix) ? current : (prefix + current).slice(0, IDEA_LIMIT)))
     setIdeaStatus('idle')
@@ -78,16 +125,31 @@ export default function Page() {
         <p className="program-note" aria-hidden="true">Вместе<br />мы можем<br />больше! <span>♥</span><svg viewBox="0 0 160 40"><path d="M2 38C40 20 95 6 158 2" /></svg></p>
         <div className="program-cards">
           {programCards.map((card, index) => (
-            <article key={card.id} className={`program-card tone-${card.tone}`}>
+            <article key={card.id} className={`program-card tone-${card.tone}`} onClick={() => setOpenCard(card.id)}>
               <Sparkle className="program-card-ghost" />
               <span className="program-card-num">0{index + 1}</span>
               <img className="program-card-icon" src={card.icon} alt="" />
               <h3>{card.title}</h3>
               <p>{card.text}</p>
-              <button type="button" className="program-card-go" onClick={() => pickTopic(card.title)} aria-label={`Предложить идею: ${card.title}`}><ArrowRight /></button>
+              <button type="button" className="program-card-go" onClick={(event) => { event.stopPropagation(); setOpenCard(card.id) }} aria-label={`Подробнее: ${card.title}`} aria-haspopup="dialog"><ArrowRight /></button>
             </article>
           ))}
         </div>
+        {programCards.map((card, index) => (
+          <div key={card.id} id={`modal-${card.id}`} className={`program-modal tone-${card.tone}`} hidden={openCard !== card.id} onClick={() => setOpenCard(null)}>
+            <div className="program-modal-card" role="dialog" aria-modal="true" aria-labelledby={`modal-title-${card.id}`} onClick={(event) => event.stopPropagation()}>
+              <button type="button" className="program-modal-close" onClick={() => setOpenCard(null)} aria-label="Закрыть"><X /></button>
+              <img className="program-modal-icon" src={card.icon} alt="" />
+              <span className="program-card-num">0{index + 1}</span>
+              <h3 id={`modal-title-${card.id}`}>{card.title}</h3>
+              <p className="program-modal-intro">{card.intro}</p>
+              <ul>
+                {card.points.map(([name, detail]) => <li key={name}><Sparkle /><div><b>{name}</b><span>{detail}</span></div></li>)}
+              </ul>
+              <div className="program-modal-foot"><p>Есть своя идея по этой теме?</p><button type="button" className="program-modal-cta" data-topic={card.title} onClick={() => pickTopic(card.title)}>Предложить идею<ArrowRight /></button></div>
+            </div>
+          </div>
+        ))}
         <div className="idea-box" id="poll">
           <Sparkle className="idea-star idea-star-right" />
           <Sparkle className="idea-star idea-star-left" />
