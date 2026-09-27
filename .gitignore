@@ -15,3 +15,4 @@ next-env.d.ts
 *.tsbuildinfo
 # Local preview screenshots
 preview/
+out/

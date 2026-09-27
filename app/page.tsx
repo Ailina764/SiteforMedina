@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
+import { asset } from '@/lib/asset'
 import { startGlow } from '@/lib/glow'
 import { ArrowRight, ArrowUpRight, Heart, Lock, Menu, MessageCircle, Music2, Play, Send, Share2, X } from 'lucide-react'
 
@@ -127,14 +128,14 @@ export default function Page() {
       <section className="hero" id="top">
         <GlowBlobs />
         <div className="hero-copy"><p className="eyebrow">ГОЛОС КАЖДОГО — БУДУЩЕЕ ВСЕХ.</p><h1 className="hero-title">Я создаю школу, где слышен каждый.</h1><p className="hero-note">Настоящий лидер не диктует правила, а умеет слушать и объединять людей. Моя цель — сделать так, чтобы наша школа ожила по-новому, превратив будни в время возможностей и взаимного уважения.</p><a className="round-link" href="#program">Узнать о программе <span><ArrowUpRight /></span></a></div>
-        <div className="hero-visual" aria-label="Фотография Медины. Наведите курсор, чтобы увидеть фотографию с короной."><div className="portrait-orbit" /><img className="portrait portrait-default" src="/medina.png" alt="Медина" /><img className="portrait portrait-hover" src="/medina-sash.png" alt="Медина — президент школы" /></div><div className="hero-footer"><span>01 / 04</span><a href="#about">ЛИСТАЙ ВНИЗ <ArrowUpRight /></a></div><div className="hero-name">MEDINA</div>
+        <div className="hero-visual" aria-label="Фотография Медины. Наведите курсор, чтобы увидеть фотографию с короной."><div className="portrait-orbit" /><img className="portrait portrait-default" src={asset('/medina.png')} alt="Медина" /><img className="portrait portrait-hover" src={asset('/medina-sash.png')} alt="Медина — президент школы" /></div><div className="hero-footer"><span>01 / 04</span><a href="#about">ЛИСТАЙ ВНИЗ <ArrowUpRight /></a></div><div className="hero-name">MEDINA</div>
       </section>
 
-      <section className="biography" id="about"><GlowBlobs soft /><div className="about-heading"><span>ОБО МНЕ</span><i /></div><div className="biography-grid"><div className="photo-frame"><img src="/medina-photo.jpg" alt="Медина" /><span className="crown-mark">⌁</span><span className="sparkle">✦</span></div><div className="biography-copy"><h1 className="display-title">Лидерство начинается<br />с умения <em>слушать.</em></h1><p>{biography}</p><p>Моя главная позиция: настоящий лидер не диктует свои правила, а умеет слушать и объединять людей. Я хочу быть президентом, который ставит мнения и интересы учеников на первое место.</p><p className="biography-lead">Если я стану президентом — школа оживет по-новому!</p><p>Мы превратим школьные будни в время возможностей, ярких мероприятий и взаимного уважения. У каждого из вас появится реальная возможность влиять на то, что происходит вокруг. Голосуйте за перемены, где важен каждый!</p></div></div></section>
+      <section className="biography" id="about"><GlowBlobs soft /><div className="about-heading"><span>ОБО МНЕ</span><i /></div><div className="biography-grid"><div className="photo-frame"><img src={asset('/medina-photo.jpg')} alt="Медина" /><span className="crown-mark">⌁</span><span className="sparkle">✦</span></div><div className="biography-copy"><h1 className="display-title">Лидерство начинается<br />с умения <em>слушать.</em></h1><p>{biography}</p><p>Моя главная позиция: настоящий лидер не диктует свои правила, а умеет слушать и объединять людей. Я хочу быть президентом, который ставит мнения и интересы учеников на первое место.</p><p className="biography-lead">Если я стану президентом — школа оживет по-новому!</p><p>Мы превратим школьные будни в время возможностей, ярких мероприятий и взаимного уважения. У каждого из вас появится реальная возможность влиять на то, что происходит вокруг. Голосуйте за перемены, где важен каждый!</p></div></div></section>
 
       <section className="program" id="program">
         <GlowBlobs soft />
-        <div className="program-school" aria-hidden="true"><img src="/program/school.jpg" alt="" /></div>
+        <div className="program-school" aria-hidden="true"><img src={asset('/program/school.jpg')} alt="" /></div>
         <div className="program-head">
           <p className="program-eyebrow">ПРОГРАММА</p>
           <h2 className="program-title">Мои идеи —<br /><span>для лучшей школы.</span></h2>
@@ -146,7 +147,7 @@ export default function Page() {
             <article key={card.id} className={`program-card tone-${card.tone}`} onClick={() => setOpenCard(card.id)}>
               <Sparkle className="program-card-ghost" />
               <span className="program-card-num">0{index + 1}</span>
-              <img className="program-card-icon" src={card.icon} alt="" />
+              <img className="program-card-icon" src={asset(card.icon)} alt="" />
               <h3>{card.title}</h3>
               <p>{card.text}</p>
               <button type="button" className="program-card-go" onClick={(event) => { event.stopPropagation(); setOpenCard(card.id) }} aria-label={`Подробнее: ${card.title}`} aria-haspopup="dialog"><ArrowRight /></button>
@@ -157,7 +158,7 @@ export default function Page() {
           <div key={card.id} id={`modal-${card.id}`} className={`program-modal tone-${card.tone}`} hidden={openCard !== card.id} onClick={() => setOpenCard(null)}>
             <div className="program-modal-card" role="dialog" aria-modal="true" aria-labelledby={`modal-title-${card.id}`} onClick={(event) => event.stopPropagation()}>
               <button type="button" className="program-modal-close" onClick={() => setOpenCard(null)} aria-label="Закрыть"><X /></button>
-              <img className="program-modal-icon" src={card.icon} alt="" />
+              <img className="program-modal-icon" src={asset(card.icon)} alt="" />
               <span className="program-card-num">0{index + 1}</span>
               <h3 id={`modal-title-${card.id}`}>{card.title}</h3>
               <p className="program-modal-intro">{card.intro}</p>
@@ -171,7 +172,7 @@ export default function Page() {
         <div className="idea-box" id="poll">
           <Sparkle className="idea-star idea-star-right" />
           <Sparkle className="idea-star idea-star-left" />
-          <img className="idea-icon" src="/program/chat.png" alt="" />
+          <img className="idea-icon" src={asset('/program/chat.png')} alt="" />
           <div className="idea-heading"><p>ПРЕДЛОЖИ СВОЮ ИДЕЮ</p><h3>Твоя идея может изменить школу!</h3></div>
           <p className="idea-hint">Что, по твоему мнению, не хватает в нашей школе?<br />Напиши — я обязательно учту!</p>
           <label className="idea-field" htmlFor="idea-text">
@@ -202,14 +203,14 @@ export default function Page() {
               <article key={video.id} className={`reel${video.src ? ' has-video' : ''}`}>
                 <div className="reel-screen">
                   {video.src ? (
-                    <video src={video.src} poster={video.poster || undefined} controls playsInline preload="metadata" />
+                    <video src={asset(video.src)} poster={video.poster ? asset(video.poster) : undefined} controls playsInline preload="metadata" />
                   ) : (
                     <div className="reel-placeholder"><span className="reel-play"><Play /></span><p>Скоро здесь</p></div>
                   )}
                   <span className="reel-badge">VOTE FOR ME · {video.id}</span>
                   <div className="reel-actions" aria-hidden="true"><span><Heart /></span><span><MessageCircle /></span><span><Share2 /></span></div>
                   <div className="reel-caption">
-                    <p className="reel-author"><img src="/medina.png" alt="" />Медина</p>
+                    <p className="reel-author"><img src={asset('/medina.png')} alt="" />Медина</p>
                     <h3>{video.title}</h3>
                     <p className="reel-tags">{video.tags}</p>
                     <p className="reel-sound"><Music2 />Кампания Медины 2025—2026</p>
