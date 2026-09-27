@@ -148,3 +148,9 @@
 .glow-soft .glow-orange{width:52vw;height:52vw}
 .glow-soft .glow-blue{width:46vw;height:46vw}
 @media(max-width:800px){.glow-orange{width:130vw;height:130vw}.glow-blue{width:110vw;height:110vw}.glow-soft .glow-orange{width:110vw;height:110vw}.glow-soft .glow-blue{width:95vw;height:95vw}}
+
+/* Логотип школы в шапке */
+.brand-logo{display:block;width:64px;height:64px;border-radius:50%;box-shadow:0 0 0 1px rgba(255,255,255,.25),0 0 22px rgba(34,200,238,.28);transition:transform .35s ease,box-shadow .35s ease}
+.brand:hover .brand-logo{transform:scale(1.06) rotate(-4deg);box-shadow:0 0 0 1px rgba(255,255,255,.4),0 0 30px rgba(34,200,238,.45)}
+.brand:focus-visible{outline:2px solid #fff;outline-offset:4px;border-radius:50%}
+@media(max-width:800px){.brand-logo{width:52px;height:52px}}

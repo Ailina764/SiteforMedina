@@ -119,7 +119,7 @@ export default function Page() {
   return (
     <main className="campaign-site">
       <header className="site-header">
-        <a href="#top" className="brand" aria-label="BINOM School"><span className="brand-mark">B</span><span><b>BINOM</b><small>SCHOOL</small></span></a>
+        <a href="#top" className="brand" aria-label="BINOM School имени Кадыра Мырзы Али — на главную"><img className="brand-logo" src={asset('/binom-logo.png')} alt="" /></a>
         <nav className="header-links" aria-label="Разделы сайта"><a href="#top">Главная</a><a href="#about">Обо мне</a><a href="#poll">Опрос</a><a href="#gallery">Галерея</a></nav>
         <button className="menu-button" onClick={() => setMenuOpen((open) => !open)} aria-label={menuOpen ? 'Закрыть меню' : 'Открыть меню'}><span className="menu-circle">{menuOpen ? <X /> : <Menu />}</span></button>
       </header>
