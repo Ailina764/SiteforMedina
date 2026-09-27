@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
+import { startGlow } from '@/lib/glow'
 import { ArrowRight, ArrowUpRight, Heart, Lock, Menu, MessageCircle, Music2, Play, Send, Share2, X } from 'lucide-react'
 
 const biography = `Я развиваюсь в сфере лидерства и постоянно работаю над собой. Мечта стать президентом школы для меня — это осознанный шаг и желание сделать нашу школьную жизнь лучше.`
@@ -60,6 +61,12 @@ const galleryVideos = [
   { id: '04', title: 'Почему стоит выбрать меня', tags: '#voteforme #президентшколы', src: '', poster: '' },
 ]
 
+function GlowBlobs({ soft = false }: { soft?: boolean }) {
+  const host = useRef<HTMLDivElement>(null)
+  useEffect(() => (host.current ? startGlow(host.current) : undefined), [])
+  return <div ref={host} className={`glow${soft ? ' glow-soft' : ''}`} aria-hidden="true"><span className="glow-orange" /><span className="glow-blue" /></div>
+}
+
 function Sparkle({ className }: { className?: string }) {
   return (
     <svg className={className} viewBox="0 0 24 24" aria-hidden="true">
@@ -118,13 +125,15 @@ export default function Page() {
       {menuOpen && <nav className="menu-panel" aria-label="Основная навигация"><a href="#about" onClick={() => setMenuOpen(false)}>Биография Медины</a><a href="#program" onClick={() => setMenuOpen(false)}>Программа</a><a href="#poll" onClick={() => setMenuOpen(false)}>Предложить идею</a><a href="#gallery" onClick={() => setMenuOpen(false)}>Галерея</a></nav>}
 
       <section className="hero" id="top">
+        <GlowBlobs />
         <div className="hero-copy"><p className="eyebrow">ГОЛОС КАЖДОГО — БУДУЩЕЕ ВСЕХ.</p><h1 className="hero-title">Я создаю школу, где слышен каждый.</h1><p className="hero-note">Настоящий лидер не диктует правила, а умеет слушать и объединять людей. Моя цель — сделать так, чтобы наша школа ожила по-новому, превратив будни в время возможностей и взаимного уважения.</p><a className="round-link" href="#program">Узнать о программе <span><ArrowUpRight /></span></a></div>
         <div className="hero-visual" aria-label="Фотография Медины. Наведите курсор, чтобы увидеть фотографию с короной."><div className="portrait-orbit" /><img className="portrait portrait-default" src="/medina.png" alt="Медина" /><img className="portrait portrait-hover" src="/medina-sash.png" alt="Медина — президент школы" /></div><div className="hero-footer"><span>01 / 04</span><a href="#about">ЛИСТАЙ ВНИЗ <ArrowUpRight /></a></div><div className="hero-name">MEDINA</div>
       </section>
 
-      <section className="biography" id="about"><div className="about-heading"><span>ОБО МНЕ</span><i /></div><div className="biography-grid"><div className="photo-frame"><img src="/medina-photo.jpg" alt="Медина" /><span className="crown-mark">⌁</span><span className="sparkle">✦</span></div><div className="biography-copy"><h1 className="display-title">Лидерство начинается<br />с умения <em>слушать.</em></h1><p>{biography}</p><p>Моя главная позиция: настоящий лидер не диктует свои правила, а умеет слушать и объединять людей. Я хочу быть президентом, который ставит мнения и интересы учеников на первое место.</p><p className="biography-lead">Если я стану президентом — школа оживет по-новому!</p><p>Мы превратим школьные будни в время возможностей, ярких мероприятий и взаимного уважения. У каждого из вас появится реальная возможность влиять на то, что происходит вокруг. Голосуйте за перемены, где важен каждый!</p></div></div></section>
+      <section className="biography" id="about"><GlowBlobs soft /><div className="about-heading"><span>ОБО МНЕ</span><i /></div><div className="biography-grid"><div className="photo-frame"><img src="/medina-photo.jpg" alt="Медина" /><span className="crown-mark">⌁</span><span className="sparkle">✦</span></div><div className="biography-copy"><h1 className="display-title">Лидерство начинается<br />с умения <em>слушать.</em></h1><p>{biography}</p><p>Моя главная позиция: настоящий лидер не диктует свои правила, а умеет слушать и объединять людей. Я хочу быть президентом, который ставит мнения и интересы учеников на первое место.</p><p className="biography-lead">Если я стану президентом — школа оживет по-новому!</p><p>Мы превратим школьные будни в время возможностей, ярких мероприятий и взаимного уважения. У каждого из вас появится реальная возможность влиять на то, что происходит вокруг. Голосуйте за перемены, где важен каждый!</p></div></div></section>
 
       <section className="program" id="program">
+        <GlowBlobs soft />
         <div className="program-school" aria-hidden="true"><img src="/program/school.jpg" alt="" /></div>
         <div className="program-head">
           <p className="program-eyebrow">ПРОГРАММА</p>
@@ -178,6 +187,7 @@ export default function Page() {
       </section>
 
       <section className="gallery" id="gallery">
+        <GlowBlobs soft />
         <div className="gallery-marquee" aria-hidden="true"><div>{Array.from({ length: 2 }, (_, copy) => <span key={copy}>VOTE FOR MEDINA <Sparkle /> ГОЛОС КАЖДОГО — БУДУЩЕЕ ВСЕХ <Sparkle /> VOTE FOR ME <Sparkle /> ШКОЛА, ГДЕ СЛЫШЕН КАЖДЫЙ <Sparkle /> </span>)}</div></div>
         <div className="gallery-inner">
           <div className="gallery-head">
