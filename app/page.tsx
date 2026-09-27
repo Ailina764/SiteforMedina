@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
-import { ArrowRight, ArrowUpRight, Lock, Menu, Send, X } from 'lucide-react'
+import { ArrowRight, ArrowUpRight, Heart, Lock, Menu, MessageCircle, Music2, Play, Send, Share2, X } from 'lucide-react'
 
 const biography = `Я развиваюсь в сфере лидерства и постоянно работаю над собой. Мечта стать президентом школы для меня — это осознанный шаг и желание сделать нашу школьную жизнь лучше.`
 
@@ -49,6 +49,15 @@ const programCards = [
       ['Всегда на связи', 'Любую проблему или идею можно написать мне через форму ниже.'],
     ],
   },
+]
+
+// Галерея «Vote for me». Когда видео готово: положи файл в public/videos/
+// и впиши путь в src, например src: '/videos/01.mp4'. Обложка (poster) — по желанию.
+const galleryVideos = [
+  { id: '01', title: 'Знакомьтесь: это я', tags: '#голосуйзамедину #binomschool', src: '', poster: '' },
+  { id: '02', title: 'Моя программа за минуту', tags: '#программа #школаживёт', src: '', poster: '' },
+  { id: '03', title: 'Чего не хватает нашей школе?', tags: '#голоскаждого #опрос', src: '', poster: '' },
+  { id: '04', title: 'Почему стоит выбрать меня', tags: '#voteforme #президентшколы', src: '', poster: '' },
 ]
 
 function Sparkle({ className }: { className?: string }) {
@@ -103,10 +112,10 @@ export default function Page() {
     <main className="campaign-site">
       <header className="site-header">
         <a href="#top" className="brand" aria-label="BINOM School"><span className="brand-mark">B</span><span><b>BINOM</b><small>SCHOOL</small></span></a>
-        <nav className="header-links" aria-label="Разделы сайта"><a href="#top">Главная</a><a href="#about">Обо мне</a><a href="#poll">Опрос</a><a href="#contacts">Контакты</a></nav>
+        <nav className="header-links" aria-label="Разделы сайта"><a href="#top">Главная</a><a href="#about">Обо мне</a><a href="#poll">Опрос</a><a href="#gallery">Галерея</a><a href="#contacts">Контакты</a></nav>
         <button className="menu-button" onClick={() => setMenuOpen((open) => !open)} aria-label={menuOpen ? 'Закрыть меню' : 'Открыть меню'}><span className="menu-circle">{menuOpen ? <X /> : <Menu />}</span></button>
       </header>
-      {menuOpen && <nav className="menu-panel" aria-label="Основная навигация"><a href="#about" onClick={() => setMenuOpen(false)}>Биография Медины</a><a href="#program" onClick={() => setMenuOpen(false)}>Программа</a><a href="#poll" onClick={() => setMenuOpen(false)}>Предложить идею</a></nav>}
+      {menuOpen && <nav className="menu-panel" aria-label="Основная навигация"><a href="#about" onClick={() => setMenuOpen(false)}>Биография Медины</a><a href="#program" onClick={() => setMenuOpen(false)}>Программа</a><a href="#poll" onClick={() => setMenuOpen(false)}>Предложить идею</a><a href="#gallery" onClick={() => setMenuOpen(false)}>Галерея</a></nav>}
 
       <section className="hero" id="top">
         <div className="hero-copy"><p className="eyebrow">ГОЛОС КАЖДОГО — БУДУЩЕЕ ВСЕХ.</p><h1 className="hero-title">Я создаю школу, где слышен каждый.</h1><p className="hero-note">Настоящий лидер не диктует правила, а умеет слушать и объединять людей. Моя цель — сделать так, чтобы наша школа ожила по-новому, превратив будни в время возможностей и взаимного уважения.</p><a className="round-link" href="#program">Узнать о программе <span><ArrowUpRight /></span></a></div>
@@ -165,6 +174,41 @@ export default function Page() {
             <a className="idea-send" href={ideaLink(idea)} target="_blank" rel="noopener noreferrer" onClick={sendIdea}><Send />Отправить</a>
             <p className={`idea-status is-${ideaStatus}`} role="status">{ideaStatus === 'empty' ? 'Сначала напиши идею' : ideaStatus === 'sent' ? 'Открылся WhatsApp — нажми там «Отправить»' : <><Lock />Уйдёт Медине в WhatsApp</>}</p>
           </div>
+        </div>
+      </section>
+
+      <section className="gallery" id="gallery">
+        <div className="gallery-marquee" aria-hidden="true"><div>{Array.from({ length: 2 }, (_, copy) => <span key={copy}>VOTE FOR MEDINA <Sparkle /> ГОЛОС КАЖДОГО — БУДУЩЕЕ ВСЕХ <Sparkle /> VOTE FOR ME <Sparkle /> ШКОЛА, ГДЕ СЛЫШЕН КАЖДЫЙ <Sparkle /> </span>)}</div></div>
+        <div className="gallery-inner">
+          <div className="gallery-head">
+            <div>
+              <div className="about-heading"><span>ГАЛЕРЕЯ</span><i /></div>
+              <h2 className="display-title gallery-title">Vote <em>for me.</em></h2>
+            </div>
+            <p className="gallery-lead">Короткие видео о том, кто я, что хочу изменить и почему ваш голос важен. Смотри, делись с друзьями и приходи голосовать.</p>
+          </div>
+          <div className="gallery-reel">
+            {galleryVideos.map((video) => (
+              <article key={video.id} className={`reel${video.src ? ' has-video' : ''}`}>
+                <div className="reel-screen">
+                  {video.src ? (
+                    <video src={video.src} poster={video.poster || undefined} controls playsInline preload="metadata" />
+                  ) : (
+                    <div className="reel-placeholder"><span className="reel-play"><Play /></span><p>Скоро здесь</p></div>
+                  )}
+                  <span className="reel-badge">VOTE FOR ME · {video.id}</span>
+                  <div className="reel-actions" aria-hidden="true"><span><Heart /></span><span><MessageCircle /></span><span><Share2 /></span></div>
+                  <div className="reel-caption">
+                    <p className="reel-author"><img src="/medina.png" alt="" />Медина</p>
+                    <h3>{video.title}</h3>
+                    <p className="reel-tags">{video.tags}</p>
+                    <p className="reel-sound"><Music2 />Кампания Медины 2025—2026</p>
+                  </div>
+                </div>
+              </article>
+            ))}
+          </div>
+          <p className="gallery-note"><Sparkle />Новые видео появятся здесь совсем скоро</p>
         </div>
       </section>
     </main>
