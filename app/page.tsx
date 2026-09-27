@@ -56,7 +56,7 @@ export default function Page() {
     <main className="campaign-site">
       <header className="site-header">
         <a href="#top" className="brand" aria-label="BINOM School"><span className="brand-mark">B</span><span><b>BINOM</b><small>SCHOOL</small></span></a>
-        <p className="campaign-label">КАМПАНИЯ МЕДИНЫ<br />2025—2026</p>
+        <nav className="header-links" aria-label="Разделы сайта"><a href="#top">Главная</a><a href="#about">Обо мне</a><a href="#poll">Опрос</a><a href="#contacts">Контакты</a></nav>
         <button className="menu-button" onClick={() => setMenuOpen((open) => !open)} aria-label={menuOpen ? 'Закрыть меню' : 'Открыть меню'}><span className="menu-circle">{menuOpen ? <X /> : <Menu />}</span></button>
       </header>
       {menuOpen && <nav className="menu-panel" aria-label="Основная навигация"><a href="#about" onClick={() => setMenuOpen(false)}>Биография Медины</a><a href="#program" onClick={() => setMenuOpen(false)}>Программа</a><a href="#poll" onClick={() => setMenuOpen(false)}>Предложить идею</a></nav>}
@@ -70,11 +70,6 @@ export default function Page() {
 
       <section className="program" id="program">
         <div className="program-school" aria-hidden="true"><img src="/program/school.jpg" alt="" /></div>
-        <nav className="program-nav" aria-label="Разделы сайта">
-          <a href="#top" className="program-badge"><Sparkle className="program-badge-star" />КАНДИДАТ В ПРЕЗИДЕНТЫ</a>
-          <div className="program-links"><a href="#top">Главная</a><a href="#about">Обо мне</a><a href="#program" className="is-active">План</a><a href="#poll">Опрос</a><a href="#contacts">Контакты</a></div>
-          <span className="program-class">9Б КЛАСС / BINOM SCHOOL</span>
-        </nav>
         <div className="program-head">
           <p className="program-eyebrow">ПРОГРАММА</p>
           <h2 className="program-title">Мои идеи —<br /><span>для лучшей школы.</span></h2>
