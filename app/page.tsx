@@ -119,7 +119,7 @@ export default function Page() {
     <main className="campaign-site">
       <header className="site-header">
         <a href="#top" className="brand" aria-label="BINOM School"><span className="brand-mark">B</span><span><b>BINOM</b><small>SCHOOL</small></span></a>
-        <nav className="header-links" aria-label="Разделы сайта"><a href="#top">Главная</a><a href="#about">Обо мне</a><a href="#poll">Опрос</a><a href="#gallery">Галерея</a><a href="#contacts">Контакты</a></nav>
+        <nav className="header-links" aria-label="Разделы сайта"><a href="#top">Главная</a><a href="#about">Обо мне</a><a href="#poll">Опрос</a><a href="#gallery">Галерея</a></nav>
         <button className="menu-button" onClick={() => setMenuOpen((open) => !open)} aria-label={menuOpen ? 'Закрыть меню' : 'Открыть меню'}><span className="menu-circle">{menuOpen ? <X /> : <Menu />}</span></button>
       </header>
       {menuOpen && <nav className="menu-panel" aria-label="Основная навигация"><a href="#about" onClick={() => setMenuOpen(false)}>Биография Медины</a><a href="#program" onClick={() => setMenuOpen(false)}>Программа</a><a href="#poll" onClick={() => setMenuOpen(false)}>Предложить идею</a><a href="#gallery" onClick={() => setMenuOpen(false)}>Галерея</a></nav>}
