@@ -1,65 +1,31 @@
 'use client'
 
-import { useEffect, useRef, useState } from 'react'
+import { Fragment, useEffect, useRef, useState } from 'react'
 import { asset } from '@/lib/asset'
 import { startGlow } from '@/lib/glow'
+import { LANGS, TEXTS, type Lang } from '@/lib/i18n'
 import { ArrowRight, ArrowUpRight, Heart, Lock, Menu, MessageCircle, Music2, Play, Send, Share2, X } from 'lucide-react'
-
-const biography = `Я развиваюсь в сфере лидерства и постоянно работаю над собой. Мечта стать президентом школы для меня — это осознанный шаг и желание сделать нашу школьную жизнь лучше.`
 
 const MEDINA_WHATSAPP = '77021366520'
 const IDEA_LIMIT = 500
+const LANG_KEY = 'medina-site-lang'
 
+// Оформление карточек программы. Тексты карточек — в lib/i18n.ts.
 const programCards = [
-  {
-    id: 'study', tone: 'blue', icon: '/program/book.png', title: 'Учёба и комфорт', text: 'Комфортные зоны отдыха и поддержка инициатив учеников.',
-    intro: 'В школе мы проводим большую часть дня, поэтому здесь должно быть удобно и учиться, и отдыхать.',
-    points: [
-      ['Зоны отдыха', 'Уютные места в коридорах: пуфы, настольные игры и розетки, чтобы зарядить телефон на перемене.'],
-      ['Помощь с учёбой', 'Клуб взаимопомощи: старшеклассники помогают младшим разобраться в трудных темах перед контрольными.'],
-      ['Голос учеников', 'Опрос раз в четверть: вы сами выбираете, что в школе улучшить в первую очередь.'],
-      ['Ваши проекты', 'Помогу с кружками и идеями учеников: найти кабинет, время и учителя-куратора.'],
-    ],
-  },
-  {
-    id: 'events', tone: 'violet', icon: '/program/calendar.png', title: 'Досуг и мероприятия', text: 'Яркие праздники, тематические дни и школьные традиции.',
-    intro: 'Школьные будни станут ярче, если в каждой четверти будет событие, которого все ждут.',
-    points: [
-      ['Тематические дни', 'День национального костюма, день ретро, день любимого героя и другие дни, которые предложите вы.'],
-      ['Праздники', 'Наурыз, Новый год, День учителя и 8 Марта с концертами, ярмарками и фотозонами.'],
-      ['Новые традиции', 'Ежегодный конкурс талантов и большой школьный вечер, которые будут ждать каждый год.'],
-      ['Музыка на переменах', 'Школьное радио с песнями по заявкам учеников.'],
-    ],
-  },
-  {
-    id: 'sport', tone: 'cyan', icon: '/program/ball.png', title: 'Спорт и активность', text: 'Межклассные турниры и спортивные ивенты для разных интересов.',
-    intro: 'Спорт объединяет классы и помогает найти друзей не только среди одноклассников.',
-    points: [
-      ['Турниры между классами', 'Футбол, волейбол и баскетбол каждую четверть, с таблицей результатов для всей школы.'],
-      ['Игры для ума', 'Турниры по шахматам и тогыз кумалак для тех, кто любит думать.'],
-      ['День спорта', 'Эстафеты и весёлые старты, где в командах вместе и младшие, и старшие.'],
-      ['Награды', 'Грамоты и призы лучшим командам, игрокам и самым громким болельщикам.'],
-    ],
-  },
-  {
-    id: 'dialog', tone: 'amber', icon: '/program/people.png', title: 'Связь с администрацией', text: 'Открытый диалог с учителями через школьный совет.',
-    intro: 'Президент школы — это мост между учениками и администрацией. Каждый должен быть услышан.',
-    points: [
-      ['Школьный совет', 'Представитель от каждого класса и встречи раз в месяц, где обсуждаем ваши вопросы.'],
-      ['Честные отчёты', 'После каждой встречи рассказываю, что решили и что уже получилось.'],
-      ['Встречи с директором', 'Открытые встречи, где ученики могут задать вопрос напрямую.'],
-      ['Всегда на связи', 'Любую проблему или идею можно написать мне через форму ниже.'],
-    ],
-  },
+  { id: 'study', tone: 'blue', icon: '/program/book.png' },
+  { id: 'events', tone: 'violet', icon: '/program/calendar.png' },
+  { id: 'sport', tone: 'cyan', icon: '/program/ball.png' },
+  { id: 'dialog', tone: 'amber', icon: '/program/people.png' },
 ]
 
 // Галерея «Vote for me». Когда видео готово: положи файл в public/videos/
 // и впиши путь в src, например src: '/videos/01.mp4'. Обложка (poster) — по желанию.
+// Названия и хештеги видео — в lib/i18n.ts.
 const galleryVideos = [
-  { id: '01', title: 'Знакомьтесь: это я', tags: '#голосуйзамедину #binomschool', src: '', poster: '' },
-  { id: '02', title: 'Моя программа за минуту', tags: '#программа #школаживёт', src: '', poster: '' },
-  { id: '03', title: 'Чего не хватает нашей школе?', tags: '#голоскаждого #опрос', src: '', poster: '' },
-  { id: '04', title: 'Почему стоит выбрать меня', tags: '#voteforme #президентшколы', src: '', poster: '' },
+  { id: '01', src: '', poster: '' },
+  { id: '02', src: '', poster: '' },
+  { id: '03', src: '', poster: '' },
+  { id: '04', src: '', poster: '' },
 ]
 
 function GlowBlobs({ soft = false }: { soft?: boolean }) {
@@ -76,8 +42,8 @@ function Sparkle({ className }: { className?: string }) {
   )
 }
 
-function ideaLink(text: string) {
-  const message = `Идея для школы (с сайта кампании Медины):\n\n${text.trim()}`
+function ideaLink(text: string, heading: string) {
+  const message = `${heading}\n\n${text.trim()}`
   return `https://wa.me/${MEDINA_WHATSAPP}?text=${encodeURIComponent(message)}`
 }
 
@@ -87,6 +53,25 @@ export default function Page() {
   const [ideaStatus, setIdeaStatus] = useState<'idle' | 'empty' | 'sent'>('idle')
   const ideaField = useRef<HTMLTextAreaElement>(null)
   const [openCard, setOpenCard] = useState<string | null>(null)
+  const [lang, setLang] = useState<Lang>('ru')
+  const t = TEXTS[lang]
+
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem(LANG_KEY)
+      if (saved === 'ru' || saved === 'kk') setLang(saved)
+    } catch {}
+  }, [])
+
+  useEffect(() => {
+    document.documentElement.lang = lang
+    document.title = TEXTS[lang].pageTitle
+  }, [lang])
+
+  function chooseLang(next: Lang) {
+    setLang(next)
+    try { localStorage.setItem(LANG_KEY, next) } catch {}
+  }
 
   useEffect(() => {
     if (!openCard) return
@@ -119,107 +104,123 @@ export default function Page() {
   return (
     <main className="campaign-site">
       <header className="site-header">
-        <a href="#top" className="brand" aria-label="BINOM School имени Кадыра Мырзы Али — на главную"><img className="brand-logo" src={asset('/binom-logo.png')} alt="" /><span><b>BINOM</b><small>SCHOOL</small></span></a>
-        <nav className="header-links" aria-label="Разделы сайта"><a href="#top">Главная</a><a href="#about">Обо мне</a><a href="#poll">Опрос</a><a href="#gallery">Галерея</a></nav>
-        <button className="menu-button" onClick={() => setMenuOpen((open) => !open)} aria-label={menuOpen ? 'Закрыть меню' : 'Открыть меню'}><span className="menu-circle">{menuOpen ? <X /> : <Menu />}</span></button>
+        <a href="#top" className="brand" aria-label={t.brand}><img className="brand-logo" src={asset('/binom-logo.png')} alt="" /><span><b>BINOM</b><small>SCHOOL</small></span></a>
+        <nav className="header-links" aria-label={t.nav.label}><a href="#top">{t.nav.home}</a><a href="#about">{t.nav.about}</a><a href="#poll">{t.nav.poll}</a><a href="#gallery">{t.nav.gallery}</a></nav>
+        <div className="header-tools">
+          <div className="lang-switch" role="group" aria-label={t.langSwitch}>
+            {LANGS.map((option) => (
+              <button key={option.id} type="button" lang={option.id} className={lang === option.id ? 'is-active' : undefined} aria-pressed={lang === option.id} title={option.name} onClick={() => chooseLang(option.id)}>{option.label}</button>
+            ))}
+          </div>
+          <button className="menu-button" onClick={() => setMenuOpen((open) => !open)} aria-label={menuOpen ? t.menu.close : t.menu.open}><span className="menu-circle">{menuOpen ? <X /> : <Menu />}</span></button>
+        </div>
       </header>
-      {menuOpen && <nav className="menu-panel" aria-label="Основная навигация"><a href="#about" onClick={() => setMenuOpen(false)}>Биография Медины</a><a href="#program" onClick={() => setMenuOpen(false)}>Программа</a><a href="#poll" onClick={() => setMenuOpen(false)}>Предложить идею</a><a href="#gallery" onClick={() => setMenuOpen(false)}>Галерея</a></nav>}
+      {menuOpen && <nav className="menu-panel" aria-label={t.menu.label}><a href="#about" onClick={() => setMenuOpen(false)}>{t.menu.about}</a><a href="#program" onClick={() => setMenuOpen(false)}>{t.menu.program}</a><a href="#poll" onClick={() => setMenuOpen(false)}>{t.menu.idea}</a><a href="#gallery" onClick={() => setMenuOpen(false)}>{t.menu.gallery}</a></nav>}
 
       <section className="hero" id="top">
         <GlowBlobs />
-        <div className="hero-copy"><p className="eyebrow">ГОЛОС КАЖДОГО — БУДУЩЕЕ ВСЕХ.</p><h1 className="hero-title">Я создаю школу, где слышен каждый.</h1><p className="hero-note">Настоящий лидер не диктует правила, а умеет слушать и объединять людей. Моя цель — сделать так, чтобы наша школа ожила по-новому, превратив будни в время возможностей и взаимного уважения.</p><a className="round-link" href="#program">Узнать о программе <span><ArrowUpRight /></span></a></div>
-        <div className="hero-visual" aria-label="Фотография Медины. Наведите курсор, чтобы увидеть фотографию с короной."><div className="portrait-orbit" /><img className="portrait portrait-default" src={asset('/medina.png')} alt="Медина" /><img className="portrait portrait-hover" src={asset('/medina-sash.png')} alt="Медина — президент школы" /></div><div className="hero-footer"><span>01 / 04</span><a href="#about">ЛИСТАЙ ВНИЗ <ArrowUpRight /></a></div><div className="hero-name">MEDINA</div>
+        <div className="hero-copy"><p className="eyebrow">{t.hero.eyebrow}</p><h1 className="hero-title">{t.hero.title}</h1><p className="hero-note">{t.hero.note}</p><a className="round-link" href="#program">{t.hero.cta} <span><ArrowUpRight /></span></a></div>
+        <div className="hero-visual" aria-label={t.hero.photoLabel}><div className="portrait-orbit" /><img className="portrait portrait-default" src={asset('/medina.png')} alt={t.hero.photoAlt} /><img className="portrait portrait-hover" src={asset('/medina-sash.png')} alt={t.hero.photoSashAlt} /></div><div className="hero-footer"><span>01 / 04</span><a href="#about">{t.hero.scroll} <ArrowUpRight /></a></div><div className="hero-name">MEDINA</div>
       </section>
 
-      <section className="biography" id="about"><GlowBlobs soft /><div className="about-heading"><span>ОБО МНЕ</span><i /></div><div className="biography-grid"><div className="photo-frame"><img src={asset('/medina-photo.jpg')} alt="Медина" /><span className="crown-mark">⌁</span><span className="sparkle">✦</span></div><div className="biography-copy"><h1 className="display-title">Лидерство начинается<br />с умения <em>слушать.</em></h1><p>{biography}</p><p>Моя главная позиция: настоящий лидер не диктует свои правила, а умеет слушать и объединять людей. Я хочу быть президентом, который ставит мнения и интересы учеников на первое место.</p><p className="biography-lead">Если я стану президентом — школа оживет по-новому!</p><p>Мы превратим школьные будни в время возможностей, ярких мероприятий и взаимного уважения. У каждого из вас появится реальная возможность влиять на то, что происходит вокруг. Голосуйте за перемены, где важен каждый!</p></div></div></section>
+      <section className="biography" id="about"><GlowBlobs soft /><div className="about-heading"><span>{t.about.eyebrow}</span><i /></div><div className="biography-grid"><div className="photo-frame"><img src={asset('/medina-photo.jpg')} alt={t.hero.photoAlt} /><span className="crown-mark">⌁</span><span className="sparkle">✦</span></div><div className="biography-copy"><h1 className="display-title">{t.about.titleLine1}<br />{t.about.titleBefore}<em>{t.about.titleAccent}</em>{t.about.titleAfter}</h1><p>{t.about.p1}</p><p>{t.about.p2}</p><p className="biography-lead">{t.about.lead}</p><p>{t.about.p3}</p></div></div></section>
 
       <section className="program" id="program">
         <GlowBlobs soft />
         <div className="program-school" aria-hidden="true"><img src={asset('/program/school.jpg')} alt="" /></div>
         <div className="program-head">
-          <p className="program-eyebrow">ПРОГРАММА</p>
-          <h2 className="program-title">Мои идеи —<br /><span>для лучшей школы.</span></h2>
-          <p className="program-lead">Я верю, что школа — это не только про учёбу, но и про комфорт, развитие, дружбу и возможности. Моя программа направлена на то, чтобы сделать нашу школьную жизнь ярче, удобнее и интереснее для каждого.</p>
+          <p className="program-eyebrow">{t.program.eyebrow}</p>
+          <h2 className="program-title">{t.program.title}<br /><span>{t.program.titleAccent}</span></h2>
+          <p className="program-lead">{t.program.lead}</p>
         </div>
-        <p className="program-note" aria-hidden="true">Вместе<br />мы можем<br />больше! <span>♥</span><svg viewBox="0 0 160 40"><path d="M2 38C40 20 95 6 158 2" /></svg></p>
+        <p className="program-note" aria-hidden="true">{t.program.note[0]}<br />{t.program.note[1]}<br />{t.program.note[2]} <span>♥</span><svg viewBox="0 0 160 40"><path d="M2 38C40 20 95 6 158 2" /></svg></p>
         <div className="program-cards">
-          {programCards.map((card, index) => (
-            <article key={card.id} className={`program-card tone-${card.tone}`} onClick={() => setOpenCard(card.id)}>
-              <Sparkle className="program-card-ghost" />
-              <span className="program-card-num">0{index + 1}</span>
-              <img className="program-card-icon" src={asset(card.icon)} alt="" />
-              <h3>{card.title}</h3>
-              <p>{card.text}</p>
-              <button type="button" className="program-card-go" onClick={(event) => { event.stopPropagation(); setOpenCard(card.id) }} aria-label={`Подробнее: ${card.title}`} aria-haspopup="dialog"><ArrowRight /></button>
-            </article>
-          ))}
+          {programCards.map((card, index) => {
+            const text = t.program.cards[index]
+            return (
+              <article key={card.id} className={`program-card tone-${card.tone}`} onClick={() => setOpenCard(card.id)}>
+                <Sparkle className="program-card-ghost" />
+                <span className="program-card-num">0{index + 1}</span>
+                <img className="program-card-icon" src={asset(card.icon)} alt="" />
+                <h3>{text.title}</h3>
+                <p>{text.text}</p>
+                <button type="button" className="program-card-go" onClick={(event) => { event.stopPropagation(); setOpenCard(card.id) }} aria-label={`${t.program.more}: ${text.title}`} aria-haspopup="dialog"><ArrowRight /></button>
+              </article>
+            )
+          })}
         </div>
-        {programCards.map((card, index) => (
-          <div key={card.id} id={`modal-${card.id}`} className={`program-modal tone-${card.tone}`} hidden={openCard !== card.id} onClick={() => setOpenCard(null)}>
-            <div className="program-modal-card" role="dialog" aria-modal="true" aria-labelledby={`modal-title-${card.id}`} onClick={(event) => event.stopPropagation()}>
-              <button type="button" className="program-modal-close" onClick={() => setOpenCard(null)} aria-label="Закрыть"><X /></button>
-              <img className="program-modal-icon" src={asset(card.icon)} alt="" />
-              <span className="program-card-num">0{index + 1}</span>
-              <h3 id={`modal-title-${card.id}`}>{card.title}</h3>
-              <p className="program-modal-intro">{card.intro}</p>
-              <ul>
-                {card.points.map(([name, detail]) => <li key={name}><Sparkle /><div><b>{name}</b><span>{detail}</span></div></li>)}
-              </ul>
-              <div className="program-modal-foot"><p>Есть своя идея по этой теме?</p><button type="button" className="program-modal-cta" data-topic={card.title} onClick={() => pickTopic(card.title)}>Предложить идею<ArrowRight /></button></div>
+        {programCards.map((card, index) => {
+          const text = t.program.cards[index]
+          return (
+            <div key={card.id} id={`modal-${card.id}`} className={`program-modal tone-${card.tone}`} hidden={openCard !== card.id} onClick={() => setOpenCard(null)}>
+              <div className="program-modal-card" role="dialog" aria-modal="true" aria-labelledby={`modal-title-${card.id}`} onClick={(event) => event.stopPropagation()}>
+                <button type="button" className="program-modal-close" onClick={() => setOpenCard(null)} aria-label={t.program.close}><X /></button>
+                <img className="program-modal-icon" src={asset(card.icon)} alt="" />
+                <span className="program-card-num">0{index + 1}</span>
+                <h3 id={`modal-title-${card.id}`}>{text.title}</h3>
+                <p className="program-modal-intro">{text.intro}</p>
+                <ul>
+                  {text.points.map(([name, detail]) => <li key={name}><Sparkle /><div><b>{name}</b><span>{detail}</span></div></li>)}
+                </ul>
+                <div className="program-modal-foot"><p>{t.program.modalQuestion}</p><button type="button" className="program-modal-cta" data-topic={text.title} onClick={() => pickTopic(text.title)}>{t.program.modalCta}<ArrowRight /></button></div>
+              </div>
             </div>
-          </div>
-        ))}
+          )
+        })}
         <div className="idea-box" id="poll">
           <Sparkle className="idea-star idea-star-right" />
           <Sparkle className="idea-star idea-star-left" />
           <img className="idea-icon" src={asset('/program/chat.png')} alt="" />
-          <div className="idea-heading"><p>ПРЕДЛОЖИ СВОЮ ИДЕЮ</p><h3>Твоя идея может изменить школу!</h3></div>
-          <p className="idea-hint">Что, по твоему мнению, не хватает в нашей школе?<br />Напиши — я обязательно учту!</p>
+          <div className="idea-heading"><p>{t.idea.eyebrow}</p><h3>{t.idea.title}</h3></div>
+          <p className="idea-hint">{t.idea.hint1}<br />{t.idea.hint2}</p>
           <label className="idea-field" htmlFor="idea-text">
-            <span className="visually-hidden">Твоя идея</span>
-            <textarea id="idea-text" ref={ideaField} value={idea} maxLength={IDEA_LIMIT} placeholder="Напиши свою идею..." onChange={(event) => { setIdea(event.target.value); setIdeaStatus('idle') }} />
+            <span className="visually-hidden">{t.idea.label}</span>
+            <textarea id="idea-text" ref={ideaField} value={idea} maxLength={IDEA_LIMIT} placeholder={t.idea.placeholder} onChange={(event) => { setIdea(event.target.value); setIdeaStatus('idle') }} />
             <span className="idea-count">{idea.length}/{IDEA_LIMIT}</span>
           </label>
           <div className="idea-actions">
-            <a className="idea-send" href={ideaLink(idea)} target="_blank" rel="noopener noreferrer" onClick={sendIdea}><Send />Отправить</a>
-            <p className={`idea-status is-${ideaStatus}`} role="status">{ideaStatus === 'empty' ? 'Сначала напиши идею' : ideaStatus === 'sent' ? 'Открылся WhatsApp — нажми там «Отправить»' : <><Lock />Уйдёт Медине в WhatsApp</>}</p>
+            <a className="idea-send" href={ideaLink(idea, t.idea.message)} target="_blank" rel="noopener noreferrer" onClick={sendIdea}><Send />{t.idea.send}</a>
+            <p className={`idea-status is-${ideaStatus}`} role="status">{ideaStatus === 'empty' ? t.idea.empty : ideaStatus === 'sent' ? t.idea.sent : <><Lock />{t.idea.idle}</>}</p>
           </div>
         </div>
       </section>
 
       <section className="gallery" id="gallery">
         <GlowBlobs soft />
-        <div className="gallery-marquee" aria-hidden="true"><div>{Array.from({ length: 2 }, (_, copy) => <span key={copy}>VOTE FOR MEDINA <Sparkle /> ГОЛОС КАЖДОГО — БУДУЩЕЕ ВСЕХ <Sparkle /> VOTE FOR ME <Sparkle /> ШКОЛА, ГДЕ СЛЫШЕН КАЖДЫЙ <Sparkle /> </span>)}</div></div>
+        <div className="gallery-marquee" aria-hidden="true"><div>{Array.from({ length: 2 }, (_, copy) => <span key={copy}>{t.gallery.marquee.map((phrase) => <Fragment key={phrase}>{phrase} <Sparkle /> </Fragment>)}</span>)}</div></div>
         <div className="gallery-inner">
           <div className="gallery-head">
             <div>
-              <div className="about-heading"><span>ГАЛЕРЕЯ</span><i /></div>
+              <div className="about-heading"><span>{t.gallery.eyebrow}</span><i /></div>
               <h2 className="display-title gallery-title">Vote <em>for me.</em></h2>
             </div>
-            <p className="gallery-lead">Короткие видео о том, кто я, что хочу изменить и почему ваш голос важен. Смотри, делись с друзьями и приходи голосовать.</p>
+            <p className="gallery-lead">{t.gallery.lead}</p>
           </div>
           <div className="gallery-reel">
-            {galleryVideos.map((video) => (
-              <article key={video.id} className={`reel${video.src ? ' has-video' : ''}`}>
-                <div className="reel-screen">
-                  {video.src ? (
-                    <video src={asset(video.src)} poster={video.poster ? asset(video.poster) : undefined} controls playsInline preload="metadata" />
-                  ) : (
-                    <div className="reel-placeholder"><span className="reel-play"><Play /></span><p>Скоро здесь</p></div>
-                  )}
-                  <span className="reel-badge">VOTE FOR ME · {video.id}</span>
-                  <div className="reel-actions" aria-hidden="true"><span><Heart /></span><span><MessageCircle /></span><span><Share2 /></span></div>
-                  <div className="reel-caption">
-                    <p className="reel-author"><img src={asset('/medina.png')} alt="" />Медина</p>
-                    <h3>{video.title}</h3>
-                    <p className="reel-tags">{video.tags}</p>
-                    <p className="reel-sound"><Music2 />Кампания Медины 2025—2026</p>
+            {galleryVideos.map((video, index) => {
+              const text = t.gallery.videos[index]
+              return (
+                <article key={video.id} className={`reel${video.src ? ' has-video' : ''}`}>
+                  <div className="reel-screen">
+                    {video.src ? (
+                      <video src={asset(video.src)} poster={video.poster ? asset(video.poster) : undefined} controls playsInline preload="metadata" />
+                    ) : (
+                      <div className="reel-placeholder"><span className="reel-play"><Play /></span><p>{t.gallery.soon}</p></div>
+                    )}
+                    <span className="reel-badge">VOTE FOR ME · {video.id}</span>
+                    <div className="reel-actions" aria-hidden="true"><span><Heart /></span><span><MessageCircle /></span><span><Share2 /></span></div>
+                    <div className="reel-caption">
+                      <p className="reel-author"><img src={asset('/medina.png')} alt="" />{t.gallery.author}</p>
+                      <h3>{text.title}</h3>
+                      <p className="reel-tags">{text.tags}</p>
+                      <p className="reel-sound"><Music2 />{t.gallery.sound}</p>
+                    </div>
                   </div>
-                </div>
-              </article>
-            ))}
+                </article>
+              )
+            })}
           </div>
-          <p className="gallery-note"><Sparkle />Новые видео появятся здесь совсем скоро</p>
+          <p className="gallery-note"><Sparkle />{t.gallery.note}</p>
         </div>
       </section>
     </main>
