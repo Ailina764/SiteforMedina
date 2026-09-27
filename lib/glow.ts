@@ -11,15 +11,15 @@ export function startGlow(host: HTMLElement): () => void {
     y: index === 0 ? 0.6 : 0.45,
     following: false,
     // случайные частоты и фазы — у каждого пятна свой «характер» движения
-    fx: [0.06 + Math.random() * 0.03, 0.13 + Math.random() * 0.05],
-    fy: [0.05 + Math.random() * 0.03, 0.11 + Math.random() * 0.05],
+    fx: [0.035 + Math.random() * 0.02, 0.08 + Math.random() * 0.03],
+    fy: [0.03 + Math.random() * 0.02, 0.07 + Math.random() * 0.03],
     px: [Math.random() * 6.28, Math.random() * 6.28],
     py: [Math.random() * 6.28, Math.random() * 6.28],
   }))
 
   const wander = (blob: (typeof blobs)[number], t: number) => [
-    0.5 + 0.42 * Math.sin(t * blob.fx[0] * 6.28 + blob.px[0]) + 0.16 * Math.sin(t * blob.fx[1] * 6.28 + blob.px[1]),
-    0.5 + 0.34 * Math.sin(t * blob.fy[0] * 6.28 + blob.py[0]) + 0.14 * Math.sin(t * blob.fy[1] * 6.28 + blob.py[1]),
+    0.5 + 0.42 * Math.sin(t * blob.fx[0] * 6.28 + blob.px[0]) + 0.1 * Math.sin(t * blob.fx[1] * 6.28 + blob.px[1]),
+    0.5 + 0.34 * Math.sin(t * blob.fy[0] * 6.28 + blob.py[0]) + 0.09 * Math.sin(t * blob.fy[1] * 6.28 + blob.py[1]),
   ]
   // стартуем сразу с траектории, без рывка
   for (const blob of blobs) [blob.x, blob.y] = wander(blob, performance.now() / 1000)
@@ -63,7 +63,7 @@ export function startGlow(host: HTMLElement): () => void {
         ;[targetX, targetY] = wander(blob, t)
       }
 
-      const ease = 1 - Math.exp(-dt * (blob.following ? 3.2 : 1.1))
+      const ease = 1 - Math.exp(-dt * (blob.following ? 1.8 : 0.6))
       blob.x += (targetX - blob.x) * ease
       blob.y += (targetY - blob.y) * ease
       blob.el.style.transform = `translate3d(${blob.x * width - size / 2}px, ${blob.y * height - size / 2}px, 0)`

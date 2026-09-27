@@ -144,7 +144,7 @@
 .glow span{position:absolute;top:0;left:0;border-radius:50%;filter:blur(2px);will-change:transform}
 .glow-orange{width:70vw;height:70vw;background:radial-gradient(circle,#b44d3c,#683239 28%,transparent 68%);transform:translate3d(-25vw,10vh,0)}
 .glow-blue{width:58vw;height:58vw;background:radial-gradient(circle,#129cb9,#0b526f 30%,transparent 70%);transform:translate3d(60vw,20vh,0)}
-.glow-soft span{opacity:.45}
+.glow-soft span{opacity:.22}
 .glow-soft .glow-orange{width:52vw;height:52vw}
 .glow-soft .glow-blue{width:46vw;height:46vw}
 @media(max-width:800px){.glow-orange{width:130vw;height:130vw}.glow-blue{width:110vw;height:110vw}.glow-soft .glow-orange{width:110vw;height:110vw}.glow-soft .glow-blue{width:95vw;height:95vw}}
