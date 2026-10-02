@@ -1,6 +1,7 @@
 # Собирает сайт и публикует его на GitHub Pages.
-# Основной сайт берётся из ветки по умолчанию, предпросмотр — из ветки preview
-# и публикуется по адресу /preview/.
+# /preview/ — самая свежая версия из ветки (с меткой «ПРЕДПРОСМОТР»).
+# Основной сайт — одобренная версия: коммит, записанный в .github/published-commit.
+# Чтобы опубликовать предпросмотр, впиши в этот файл новый коммит.
 name: Публикация на GitHub Pages
 
 on:
@@ -23,19 +24,14 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: ${{ github.event.repository.default_branch }}
-          path: site
-      - name: Есть ли ветка preview
-        id: preview
-        run: |
-          if git ls-remote --exit-code --heads "https://github.com/${{ github.repository }}.git" preview >/dev/null; then
-            echo "exists=true" >> "$GITHUB_OUTPUT"
-          fi
-      - uses: actions/checkout@v4
-        if: steps.preview.outputs.exists == 'true'
-        with:
-          ref: preview
           path: preview
+      - name: Какая версия опубликована
+        id: published
+        run: echo "sha=$(tr -d '[:space:]' < preview/.github/published-commit)" >> "$GITHUB_OUTPUT"
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ steps.published.outputs.sha }}
+          path: site
       - uses: actions/setup-node@v4
         with:
           node-version: 22
@@ -47,7 +43,6 @@ jobs:
         env:
           PAGES_BASE_PATH: /${{ github.event.repository.name }}
       - name: Предпросмотр
-        if: steps.preview.outputs.exists == 'true'
         working-directory: preview
         run: npm ci && npm run build
         env:
@@ -57,7 +52,7 @@ jobs:
         run: |
           mkdir dist
           cp -r site/out/. dist/
-          if [ -d preview/out ]; then cp -r preview/out dist/preview; fi
+          cp -r preview/out dist/preview
           touch dist/.nojekyll
       - uses: actions/upload-pages-artifact@v3
         with:
