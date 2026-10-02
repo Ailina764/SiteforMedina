@@ -26,6 +26,7 @@ const ru = {
   },
   about: {
     eyebrow: 'ОБО МНЕ',
+    photoAlt: 'Медина в школьной библиотеке',
     titleLine1: 'Лидерство начинается',
     titleBefore: 'с умения ',
     titleAccent: 'слушать.',
@@ -142,6 +143,7 @@ const kk: Texts = {
   },
   about: {
     eyebrow: 'МЕН ТУРАЛЫ',
+    photoAlt: 'Медина мектеп кітапханасында',
     titleLine1: 'Көшбасшылық',
     titleBefore: '',
     titleAccent: 'тыңдай білуден',
