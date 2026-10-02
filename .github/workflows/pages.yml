@@ -1,4 +1,6 @@
-# Собирает сайт и публикует его на GitHub Pages при каждом изменении.
+# Собирает сайт и публикует его на GitHub Pages.
+# Основной сайт берётся из ветки по умолчанию, предпросмотр — из ветки preview
+# и публикуется по адресу /preview/.
 name: Публикация на GitHub Pages
 
 on:
@@ -20,18 +22,46 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.repository.default_branch }}
+          path: site
+      - name: Есть ли ветка preview
+        id: preview
+        run: |
+          if git ls-remote --exit-code --heads "https://github.com/${{ github.repository }}.git" preview >/dev/null; then
+            echo "exists=true" >> "$GITHUB_OUTPUT"
+          fi
+      - uses: actions/checkout@v4
+        if: steps.preview.outputs.exists == 'true'
+        with:
+          ref: preview
+          path: preview
       - uses: actions/setup-node@v4
         with:
           node-version: 22
           cache: npm
-      - run: npm ci
-      - run: npm run build
+          cache-dependency-path: site/package-lock.json
+      - name: Основной сайт
+        working-directory: site
+        run: npm ci && npm run build
         env:
           PAGES_BASE_PATH: /${{ github.event.repository.name }}
-      - run: touch out/.nojekyll
+      - name: Предпросмотр
+        if: steps.preview.outputs.exists == 'true'
+        working-directory: preview
+        run: npm ci && npm run build
+        env:
+          PAGES_BASE_PATH: /${{ github.event.repository.name }}/preview
+          NEXT_PUBLIC_PREVIEW: '1'
+      - name: Собрать всё в одну папку
+        run: |
+          mkdir dist
+          cp -r site/out/. dist/
+          if [ -d preview/out ]; then cp -r preview/out dist/preview; fi
+          touch dist/.nojekyll
       - uses: actions/upload-pages-artifact@v3
         with:
-          path: out
+          path: dist
 
   deploy:
     needs: build

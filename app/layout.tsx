@@ -3,10 +3,14 @@ import type { Metadata, Viewport } from 'next'
 import { asset } from '@/lib/asset'
 import './globals.css'
 
+// NEXT_PUBLIC_PREVIEW=1 задаётся только при сборке предпросмотра (/preview/).
+const isPreview = process.env.NEXT_PUBLIC_PREVIEW === '1'
+
 export const metadata: Metadata = {
   title: 'Кампания Медины — BINOM School',
   description: 'Голос каждого — будущее всех. Кампания Медины за школьные изменения.',
   generator: 'v0.app',
+  ...(isPreview && { robots: { index: false, follow: false } }),
   icons: {
     icon: [
       {
@@ -43,6 +47,7 @@ export default function RootLayout({
     <html lang="ru">
       <body className="antialiased">
         {children}
+        {isPreview && <div className="preview-badge" role="note">ПРЕДПРОСМОТР · ещё не опубликовано</div>}
         {process.env.NODE_ENV === 'production' && <Analytics />}
       </body>
     </html>
