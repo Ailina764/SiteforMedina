@@ -3,8 +3,8 @@
 import { Fragment, useEffect, useRef, useState } from 'react'
 import { asset } from '@/lib/asset'
 import { startGlow } from '@/lib/glow'
-import { LANGS, TEXTS, type Lang } from '@/lib/i18n'
-import { ArrowRight, ArrowUpRight, Heart, Lock, Menu, MessageCircle, Music2, Play, Send, Share2, X } from 'lucide-react'
+import { LANGS, TEXTS, type Lang, type Texts } from '@/lib/i18n'
+import { ArrowRight, ArrowUpRight, Heart, Lock, Maximize, Menu, MessageCircle, Music2, Pause, Play, Send, Share2, Volume2, VolumeX, X } from 'lucide-react'
 
 const MEDINA_WHATSAPP = '77021366520'
 const IDEA_LIMIT = 500
@@ -21,8 +21,11 @@ const programCards = [
 // Галерея «Vote for me». Когда видео готово: положи файл в public/videos/
 // и впиши путь в src, например src: '/videos/01.mp4'. Обложка (poster) — по желанию.
 // Названия и хештеги видео — в lib/i18n.ts.
+// Главное (горизонтальное) видео галереи. Тексты — в lib/i18n.ts (gallery.featured).
+const FEATURED_VIDEO = { src: '/videos/vote-for-medina.mp4', poster: '/videos/vote-for-medina.jpg' }
+
 const galleryVideos = [
-  { id: '01', src: '/videos/01.mp4', poster: '/videos/01.jpg' },
+  { id: '01', src: '', poster: '' },
   { id: '02', src: '', poster: '' },
   { id: '03', src: '', poster: '' },
   { id: '04', src: '', poster: '' },
@@ -45,6 +48,105 @@ function Sparkle({ className }: { className?: string }) {
 function ideaLink(text: string, heading: string) {
   const message = `${heading}\n\n${text.trim()}`
   return `https://wa.me/${MEDINA_WHATSAPP}?text=${encodeURIComponent(message)}`
+}
+
+function formatTime(seconds: number) {
+  if (!Number.isFinite(seconds)) return '0:00'
+  return `${Math.floor(seconds / 60)}:${String(Math.floor(seconds % 60)).padStart(2, '0')}`
+}
+
+// Горизонтальный плеер со своими кнопками (вместо стандартных браузерных).
+function FeaturedPlayer({ src, poster, title, labels }: { src: string; poster: string; title: string; labels: Texts['gallery']['player'] }) {
+  const box = useRef<HTMLDivElement>(null)
+  const video = useRef<HTMLVideoElement>(null)
+  const hideTimer = useRef<number>(0)
+  const [started, setStarted] = useState(false)
+  const [playing, setPlaying] = useState(false)
+  const [muted, setMuted] = useState(false)
+  const [ui, setUi] = useState(false)
+  const [current, setCurrent] = useState(0)
+  const [duration, setDuration] = useState(0)
+
+  useEffect(() => {
+    // метаданные ролика могли загрузиться раньше, чем подключились обработчики
+    const el = video.current
+    if (el && el.readyState >= 1 && Number.isFinite(el.duration)) setDuration(el.duration)
+    return () => window.clearTimeout(hideTimer.current)
+  }, [])
+
+  function poke() {
+    setUi(true)
+    window.clearTimeout(hideTimer.current)
+    hideTimer.current = window.setTimeout(() => setUi(false), 2600)
+  }
+  function toggle() {
+    const el = video.current
+    if (!el) return
+    if (el.paused) void el.play().catch(() => {})
+    else el.pause()
+  }
+  function toggleMute() {
+    const el = video.current
+    if (!el) return
+    el.muted = !el.muted
+    setMuted(el.muted)
+  }
+  function seek(value: number) {
+    const el = video.current
+    if (!el) return
+    el.currentTime = value
+    setCurrent(value)
+  }
+  function fullscreen() {
+    const wrapper = box.current
+    const el = video.current as (HTMLVideoElement & { webkitEnterFullscreen?: () => void }) | null
+    if (!wrapper || !el) return
+    if (document.fullscreenElement) void document.exitFullscreen()
+    else if (wrapper.requestFullscreen) void wrapper.requestFullscreen().catch(() => {})
+    else el.webkitEnterFullscreen?.()
+  }
+
+  const percent = duration ? (current / duration) * 100 : 0
+  const cls = ['player', started && 'is-started', playing && 'is-playing', (ui || !playing) && 'is-ui'].filter(Boolean).join(' ')
+  return (
+    <div className="feature-frame">
+      <div ref={box} className={cls} onPointerMove={poke} onPointerDown={poke} onFocus={poke}>
+        <video
+          ref={video}
+          src={asset(src)}
+          preload="metadata"
+          playsInline
+          aria-label={title}
+          onClick={toggle}
+          onPlay={() => { setPlaying(true); setStarted(true); poke() }}
+          onPause={() => setPlaying(false)}
+          onEnded={() => { setPlaying(false); setStarted(false) }}
+          onTimeUpdate={(event) => setCurrent(event.currentTarget.currentTime)}
+          onLoadedMetadata={(event) => setDuration(event.currentTarget.duration)}
+          onDurationChange={(event) => setDuration(event.currentTarget.duration)}
+        />
+        <div className="player-cover" aria-hidden="true"><img src={asset(poster)} alt="" /></div>
+        <button type="button" className="player-big" onClick={toggle} aria-label={labels.play}><Play /></button>
+        <div className="player-bar">
+          <button type="button" className="player-btn" onClick={toggle} aria-label={playing ? labels.pause : labels.play}>{playing ? <Pause /> : <Play />}</button>
+          <span className="player-time">{formatTime(current)} / {formatTime(duration)}</span>
+          <input
+            type="range"
+            className="player-seek"
+            min={0}
+            max={duration || 0}
+            step={0.1}
+            value={current}
+            aria-label={labels.seek}
+            onChange={(event) => seek(Number(event.target.value))}
+            style={{ '--p': `${percent}%` } as React.CSSProperties}
+          />
+          <button type="button" className="player-btn" onClick={toggleMute} aria-label={muted ? labels.unmute : labels.mute}>{muted ? <VolumeX /> : <Volume2 />}</button>
+          <button type="button" className="player-btn" onClick={fullscreen} aria-label={labels.fullscreen}><Maximize /></button>
+        </div>
+      </div>
+    </div>
+  )
 }
 
 export default function Page() {
@@ -196,6 +298,18 @@ export default function Page() {
             </div>
             <p className="gallery-lead">{t.gallery.lead}</p>
           </div>
+          <div className="feature">
+            <FeaturedPlayer src={FEATURED_VIDEO.src} poster={FEATURED_VIDEO.poster} title={t.gallery.featured.title} labels={t.gallery.player} />
+            <div className="feature-info">
+              <span className="feature-badge">{t.gallery.featured.badge}</span>
+              <h3 className="display-title feature-title">{t.gallery.featured.title}</h3>
+              <p className="feature-text">{t.gallery.featured.text}</p>
+              <p className="feature-tags">{t.gallery.featured.tags}</p>
+              <div className="feature-author"><img src={asset('/medina.png')} alt="" /><span>{t.gallery.author}<small>{t.gallery.sound}</small></span></div>
+            </div>
+          </div>
+          <div className="gallery-shorts">
+            <div className="about-heading"><span>{t.gallery.shorts}</span><i /></div>
           <div className="gallery-reel">
             {galleryVideos.map((video, index) => {
               const text = t.gallery.videos[index]
@@ -219,6 +333,7 @@ export default function Page() {
                 </article>
               )
             })}
+          </div>
           </div>
           <p className="gallery-note"><Sparkle />{t.gallery.note}</p>
         </div>
