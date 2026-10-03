@@ -47,10 +47,6 @@ for (let i = 0; i < total; i++) {
   if (i % 60 === 0) console.log(`кадр ${i}/${total}`)
 }
 
-// подпись для вертикальной версии (как в референсе)
-const cap = await browser.newPage({ viewport: { width: 1080, height: 1920 } })
-await cap.setContent(`<body style="margin:0;background:transparent"><div style="position:absolute;left:0;right:0;top:300px;text-align:center;font:700 52px/1.25 'Liberation Sans',Arial,sans-serif;color:#fff;text-shadow:0 2px 6px rgba(0,0,0,.5)">POV: you let me animate<br>your campaign <span style=\"font-family:'Noto Color Emoji'\">🙈</span></div></body>`)
-await cap.screenshot({ path: path.join(out, 'caption.png'), omitBackground: true })
 await browser.close()
 
 const sound = path.join(dir, 'assets', 'sound.m4a')
@@ -60,9 +56,8 @@ const ff = process.env.FFMPEG || 'ffmpeg'
 // горизонтальная версия
 execFileSync(ff, ['-y', '-loglevel', 'error', '-framerate', String(FPS), '-i', path.join(frames, '%04d.jpg'), ...audio,
   ...map, '-c:v', 'libx264', '-pix_fmt', 'yuv420p', '-crf', '18', '-movflags', '+faststart', path.join(out, 'vote-for-medina-16x10.mp4')], { stdio: 'inherit' })
-// вертикальная версия для TikTok 1080×1920
-execFileSync(ff, ['-y', '-loglevel', 'error', '-framerate', String(FPS), '-i', path.join(frames, '%04d.jpg'), ...audio, '-i', path.join(out, 'caption.png'),
-  '-filter_complex', `[0:v]scale=1080:675,pad=1080:1920:0:600:black[v];[v][${audio.length ? 2 : 1}:v]overlay=0:0[o]`,
-  '-map', '[o]', ...(audio.length ? ['-map', '1:a', '-c:a', 'aac', '-b:a', '160k', '-shortest'] : []),
+// вертикальная версия для TikTok 1080×1920: видео по центру, чёрные поля сверху и снизу, без подписи
+execFileSync(ff, ['-y', '-loglevel', 'error', '-framerate', String(FPS), '-i', path.join(frames, '%04d.jpg'), ...audio,
+  '-vf', 'scale=1080:675,pad=1080:1920:0:(oh-ih)/2:black', ...map,
   '-c:v', 'libx264', '-pix_fmt', 'yuv420p', '-crf', '18', '-movflags', '+faststart', path.join(out, 'vote-for-medina-tiktok.mp4')], { stdio: 'inherit' })
 console.log('готово:', out)

@@ -22,7 +22,7 @@ const programCards = [
 // и впиши путь в src, например src: '/videos/01.mp4'. Обложка (poster) — по желанию.
 // Названия и хештеги видео — в lib/i18n.ts.
 const galleryVideos = [
-  { id: '01', src: '', poster: '' },
+  { id: '01', src: '/videos/01.mp4', poster: '/videos/01.jpg' },
   { id: '02', src: '', poster: '' },
   { id: '03', src: '', poster: '' },
   { id: '04', src: '', poster: '' },
