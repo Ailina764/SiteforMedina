@@ -115,7 +115,7 @@
 .reel:nth-child(even){transform:translateY(44px)}
 .reel:hover{transform:translateY(-8px) rotate(-1.2deg);box-shadow:0 0 60px rgba(34,200,238,.35)}
 .reel:nth-child(even):hover{transform:translateY(36px) rotate(1.2deg)}
-.reel-screen{position:relative;aspect-ratio:9/16;overflow:hidden;border-radius:28.5px;background:radial-gradient(circle at 50% 38%,rgba(34,200,238,.22),transparent 45%),repeating-linear-gradient(135deg,rgba(255,255,255,.025) 0 14px,transparent 14px 28px),linear-gradient(180deg,#0d1d44,#07112f 60%,#050b1c)}
+.reel-screen{position:relative;isolation:isolate;transform:translateZ(0);-webkit-mask-image:-webkit-radial-gradient(white,black);aspect-ratio:9/16;overflow:hidden;border-radius:28.5px;background:radial-gradient(circle at 50% 38%,rgba(34,200,238,.22),transparent 45%),repeating-linear-gradient(135deg,rgba(255,255,255,.025) 0 14px,transparent 14px 28px),linear-gradient(180deg,#0d1d44,#07112f 60%,#050b1c)}
 .reel-screen video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;background:#000}
 .reel-placeholder{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;padding-bottom:22%}
 .reel-placeholder p{margin:0;color:#9fb0cc;font-size:13px;letter-spacing:.14em;text-transform:uppercase}
@@ -133,7 +133,9 @@
 .reel-tags{margin:0 0 10px;color:#7fcff0;font-size:12px}
 .reel-sound{display:flex;align-items:center;gap:7px;margin:0;color:#aab6cc;font-size:11px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .reel-sound svg{flex:none;width:13px;height:13px}
-.reel.has-video .reel-caption,.reel.has-video .reel-actions{display:none}
+.reel.has-video .reel-screen video{inset:auto;left:14px;top:39%;width:calc(100% - 28px);height:auto;aspect-ratio:16/10;transform:translateY(-50%);border-radius:22px;object-fit:cover;background:#050d18;box-shadow:0 14px 34px rgba(0,0,0,.5),0 0 0 1px rgba(255,255,255,.14)}
+.reel.has-video .reel-actions{bottom:36px}
+.reel.has-video .reel-badge{z-index:2}
 .gallery-note{display:flex;align-items:center;justify-content:center;gap:12px;margin:40px 0 0;color:#8e9dba;font-size:14px;letter-spacing:.04em}
 .gallery-note svg{width:14px;height:14px;color:var(--cyan)}
 @media(max-width:1100px){.gallery-reel{grid-template-columns:repeat(2,minmax(0,1fr));max-width:640px;margin-inline:auto}}
