@@ -1,0 +1,435 @@
+<!doctype html>
+<!--
+  Видео «Vote for Medina» (по референсу «POV: you let me animate your campaign»).
+  Кадр 1920×1200. Вся анимация задаётся функцией render(t), t — секунды.
+  Собрать видео: node video/vote-for-me/render.mjs
+  Тексты — в объекте TEXT ниже.
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Vote for Medina</title>
+<style>
+@font-face{font-family:Molle;src:url(fonts/molle-latin-400-italic.woff2);font-style:italic}
+@font-face{font-family:Righteous;src:url(fonts/righteous-latin-400-normal.woff2)}
+@font-face{font-family:Marker;src:url(fonts/permanent-marker-latin-400-normal.woff2)}
+@font-face{font-family:Oswald;src:url(fonts/oswald-latin-300-normal.woff2);font-weight:300}
+@font-face{font-family:Oswald;src:url(fonts/oswald-latin-500-normal.woff2);font-weight:500}
+@font-face{font-family:Oswald;src:url(fonts/oswald-latin-600-normal.woff2);font-weight:600}
+@font-face{font-family:Montserrat;src:url(fonts/montserrat-latin-800-normal.woff2);font-weight:800}
+@font-face{font-family:Inter;src:url(fonts/inter-latin-400-normal.woff2);font-weight:400}
+@font-face{font-family:Inter;src:url(fonts/inter-latin-600-normal.woff2);font-weight:600}
+
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{width:1920px;height:1200px;overflow:hidden;background:#000}
+#stage{position:relative;width:1920px;height:1200px;overflow:hidden;background:#000}
+.layer{position:absolute;inset:0}
+
+/* ---------- Сцена A: телефон ---------- */
+#sceneA{background:#b5136c;overflow:hidden}
+#pinkbg{position:absolute;inset:-200px;background:
+  radial-gradient(ellipse 34% 40% at 50% 46%,#fbe9f2 0%,#f6d3e4 38%,rgba(244,196,220,.0) 72%),
+  radial-gradient(ellipse 30% 26% at 30% 30%,rgba(250,228,240,.95),rgba(250,228,240,0) 70%),
+  radial-gradient(ellipse 26% 30% at 72% 62%,rgba(248,214,232,.9),rgba(248,214,232,0) 70%),
+  radial-gradient(ellipse 22% 22% at 64% 24%,rgba(252,236,244,.85),rgba(252,236,244,0) 70%),
+  radial-gradient(ellipse 60% 60% at 50% 50%,#e45aa0 0%,#c8187a 60%,#8e0f5c 100%)}
+#blobs{position:absolute;inset:0;filter:url(#water)}
+.blob{position:absolute;border-radius:50%;background:radial-gradient(circle,rgba(255,238,246,.85),rgba(255,226,240,0) 68%)}
+.phone{position:absolute;left:480px;top:130px;width:960px;height:2000px;transform-style:preserve-3d}
+.face{position:absolute;inset:0;border-radius:150px;backface-visibility:hidden}
+.front{background:linear-gradient(90deg,#3a3a3c,#d8d8da 1.5%,#2b2b2d 3%,#0d0d0e 4%,#0d0d0e 96%,#2b2b2d 97%,#d8d8da 98.5%,#3a3a3c);box-shadow:0 30px 80px rgba(70,0,40,.45)}
+.back{background:linear-gradient(180deg,#5a2238,#2a0e1a 30%,#1c0912);transform:rotateX(180deg);box-shadow:0 30px 80px rgba(70,0,40,.45)}
+.back:before{content:'';position:absolute;left:8%;right:8%;top:5%;height:12%;border-radius:60px;background:linear-gradient(180deg,#7a5260,#3a1c28)}
+.screen{position:absolute;left:46px;right:46px;top:46px;bottom:46px;border-radius:110px;overflow:hidden;background:#fff}
+.notch{position:absolute;left:50%;top:44px;width:440px;height:84px;transform:translateX(-50%);background:#0d0d0e;border-radius:0 0 50px 50px;z-index:5}
+.notch:after{content:'';position:absolute;left:62%;top:26px;width:22px;height:22px;border-radius:50%;background:#1d2a44}
+.status{position:absolute;right:70px;top:38px;display:flex;gap:16px;align-items:center;z-index:4}
+.status svg{width:58px;height:40px}
+.lock{position:absolute;inset:0;background:#fff;text-align:center}
+.lock .clock{margin-top:150px;font:600 270px/1 Oswald,sans-serif;color:#121212;letter-spacing:-4px}
+.lock .sub{margin-top:6px;font:400 34px/1 Inter,sans-serif;color:#555;letter-spacing:1px}
+#scan{position:absolute;left:0;right:0;height:40px;background:linear-gradient(180deg,rgba(255,255,255,0),#fff 45%,#fff 55%,rgba(255,255,255,0));mix-blend-mode:normal}
+#lockBlack{position:absolute;left:0;right:0;bottom:0;background:#050505}
+.chat{position:absolute;inset:0;background:#fff}
+.chat .head{position:absolute;left:0;right:0;top:0;height:290px;background:linear-gradient(180deg,#f2c6d8,#f7dce7)}
+.chat .back-arrow{position:absolute;left:70px;top:150px;width:46px;height:70px}
+.chat .avatar{position:absolute;left:50%;top:115px;width:140px;height:140px;margin-left:-70px;border-radius:50%;background:#f8e6ee;overflow:hidden}
+.chat .input{position:absolute;left:40px;right:40px;bottom:-930px;height:86px;display:flex;gap:20px;align-items:center}
+.chat .plus{width:70px;height:70px;border-radius:50%;background:#e9b8cc;color:#fff;font:300 60px/66px Inter;text-align:center}
+.chat .pill{flex:1;height:70px;border-radius:40px;border:4px solid #e7bcd0}
+.person{position:absolute;left:50%;bottom:-8%;width:62%;height:84%;transform:translateX(-50%)}
+.person:before{content:'';position:absolute;left:28%;right:28%;top:6%;height:40%;border-radius:50%;background:currentColor}
+.person:after{content:'';position:absolute;left:4%;right:4%;top:52%;height:70%;border-radius:50% 50% 0 0;background:currentColor}
+
+.bubble{position:absolute;display:flex;align-items:center;gap:22px;height:150px;padding:0 54px 0 24px;border-radius:75px;background:linear-gradient(180deg,#ffffff,#f4f0f1);box-shadow:0 18px 36px rgba(90,10,50,.28),inset 0 -6px 10px rgba(0,0,0,.05)}
+.bubble .av{position:relative;flex:none;width:100px;height:100px;border-radius:50%;overflow:hidden;background:#f3dbe5;color:#dba4bb}
+.bubble .msg{font:400 46px/1 Inter,sans-serif;color:#2a2228;white-space:nowrap}
+.bubble .who{position:absolute;right:56px;top:-34px;font:400 22px/1 Inter,sans-serif;color:#5a4b52;letter-spacing:1px}
+.bubble .tail{position:absolute;bottom:-22px;width:46px;height:46px;background:#f4f0f1;clip-path:polygon(0 0,100% 0,100% 100%)}
+#b1 .tail{right:70px;transform:scaleX(1)}
+#b2 .tail{left:30px;transform:scaleX(-1)}
+
+#callLayer{position:absolute;inset:0}
+.callbtn{position:absolute;top:96px;width:126px;height:126px;border-radius:50%;background:radial-gradient(circle at 45% 40%,#fff,#fdf3f6 60%,#f2d9e3);box-shadow:0 0 30px rgba(255,255,255,.65)}
+.callbtn svg{position:absolute;inset:30px;opacity:.18}
+#callText{position:absolute;left:0;right:0;top:400px;text-align:center;font:italic 400 132px/1.08 Molle,cursive;color:#fdf2ea;
+  text-shadow:-2px 3px 0 #f0b98c,-4px 6px 0 #e29a68,-6px 9px 0 #c9774a,-8px 12px 0 #8e4a26,-10px 15px 0 #5b2a14,-14px 24px 26px rgba(30,0,10,.55)}
+#callText .l2{display:block;font-size:140px}
+#whip{position:absolute;inset:0;background:#fff;opacity:0}
+
+/* ---------- Сцена B: that's SO Medina ---------- */
+#sceneB{background:radial-gradient(ellipse 80% 80% at 50% 50%,#fbf9f6,#efe9e4)}
+#stars{position:absolute;inset:0}
+.word{position:absolute;font-family:Righteous,sans-serif;-webkit-background-clip:text;background-clip:text;color:transparent;white-space:nowrap;line-height:1}
+#row{position:absolute;left:98px;top:300px;display:flex;align-items:baseline;gap:30px}
+#row .word{position:relative}
+#w1{font-size:165px;background-image:linear-gradient(90deg,#e8551d 0%,#e8551d 34%,#ef8d6b 60%,#f0a7b0 100%)}
+#w2{font-size:250px;background-image:linear-gradient(90deg,#e2708e,#efa3b3)}
+#w3{left:88px;top:500px;font-size:275px;background-image:linear-gradient(90deg,#9a0b55 0%,#b51e6d 40%,#d4628f 75%,#e595ae 100%)}
+.subline{position:absolute;left:104px;top:810px;font:300 72px/1 Oswald,sans-serif;letter-spacing:4px;white-space:nowrap;-webkit-background-clip:text;background-clip:text;color:transparent;background-image:linear-gradient(90deg,#c18a6c,#d8a99a 60%,#e2b9b4)}
+.photo{position:absolute;transform-origin:50% 100%;filter:drop-shadow(5px 0 0 #fff) drop-shadow(-5px 0 0 #fff) drop-shadow(0 5px 0 #fff) drop-shadow(0 -5px 0 #fff) drop-shadow(14px 18px 16px rgba(60,20,30,.35))}
+#p1{left:1230px;top:70px;height:1170px}
+#p2{left:1020px;top:40px;height:1290px}
+#roll{position:absolute;top:0;bottom:0;width:2400px;background:#f4f3ef}
+#roll:after{content:'';position:absolute;right:-90px;top:0;bottom:0;width:180px;border-radius:90px/50%;background:linear-gradient(90deg,#d9d7d2,#ffffff 40%,#e7e5e0 70%,#bdbab4);box-shadow:20px 0 40px rgba(0,0,0,.25)}
+
+/* ---------- Сцена C: бюллетень ---------- */
+#sceneC{background:#f3f2ee}
+#vig{position:absolute;inset:0;background:radial-gradient(ellipse 72% 70% at 50% 46%,rgba(0,0,0,0) 62%,rgba(20,18,14,.26) 100%);pointer-events:none}
+.brush{position:absolute;left:0;right:0;text-align:center;font:400 124px/1 Marker,cursive;color:#111;white-space:nowrap;filter:url(#rough)}
+#q1{top:170px;transform:rotate(-1.5deg)}
+#q2{top:350px;transform:rotate(-1deg)}
+.box{position:absolute;top:560px;width:370px;height:370px;filter:url(#rough)}
+.box svg{width:100%;height:100%;overflow:visible}
+#box1{left:600px}#box2{left:1250px}
+.lbl{position:absolute;top:975px;width:370px;text-align:center;font:500 46px/1 Oswald,sans-serif;color:#151515;letter-spacing:1px}
+#l1{left:600px}#l2{left:1250px}
+#check{position:absolute;inset:0;overflow:visible;filter:url(#rough)}
+#pen{position:absolute;left:0;top:0;width:80px;height:1100px;transform-origin:40px 0}
+
+/* ---------- Финал ---------- */
+#sceneD{background:#000}
+.credit{position:absolute;left:0;right:0;text-align:center;font:800 40px/1 Montserrat,sans-serif;color:#fff;letter-spacing:.5px;white-space:pre}
+#c1{top:560px}#c2{top:610px}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute">
+  <defs>
+    <filter id="water"><feTurbulence type="fractalNoise" baseFrequency="0.006" numOctaves="3" seed="4"/><feDisplacementMap in="SourceGraphic" scale="160"/></filter>
+    <filter id="rough"><feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="2" seed="2" result="n"/><feDisplacementMap in="SourceGraphic" in2="n" scale="5"/></filter>
+    <pattern id="dotMauve" width="13" height="13" patternUnits="userSpaceOnUse"><circle cx="6.5" cy="6.5" r="3.4" fill="#8f5374"/></pattern>
+    <pattern id="dotPink" width="13" height="13" patternUnits="userSpaceOnUse"><circle cx="6.5" cy="6.5" r="3.4" fill="#cf5a92"/></pattern>
+    <pattern id="dotPeach" width="13" height="13" patternUnits="userSpaceOnUse"><circle cx="6.5" cy="6.5" r="3.6" fill="#d39a6e"/></pattern>
+  </defs>
+</svg>
+
+<div id="stage">
+  <!-- Сцена A -->
+  <div id="sceneA" class="layer">
+    <div id="cam" class="layer">
+      <div id="pinkbg"></div>
+      <div id="blobs"></div>
+      <div id="phoneLock" class="phone">
+        <div class="face back"></div>
+        <div class="face front"><div class="screen">
+          <div class="lock"><div class="clock">12:00</div><div class="sub">notifications center</div></div>
+          <div id="lockBlack"></div><div id="scan"></div>
+          <div class="notch"></div>
+        </div></div>
+      </div>
+      <div id="phoneChat" class="phone">
+        <div class="face front"><div class="screen"><div class="chat">
+          <div class="head"></div>
+          <svg class="back-arrow" viewBox="0 0 46 70"><path d="M38 6 8 35l30 29" fill="none" stroke="#fff" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <div class="avatar" style="color:#eab3c9"><div class="person"></div></div>
+          <div class="status"><svg viewBox="0 0 58 40"><path d="M4 14a36 36 0 0 1 50 0M12 22a24 24 0 0 1 34 0M20 30a12 12 0 0 1 18 0" fill="none" stroke="#fff" stroke-width="5" stroke-linecap="round"/></svg><svg viewBox="0 0 70 36" style="width:70px"><rect x="2" y="3" width="60" height="30" rx="9" fill="none" stroke="#fff" stroke-width="4"/><rect x="8" y="9" width="40" height="18" rx="4" fill="#fff"/><rect x="64" y="12" width="5" height="12" rx="2" fill="#fff"/></svg></div>
+          <div class="input"><div class="plus">+</div><div class="pill"></div></div>
+          <div class="notch"></div>
+        </div></div></div>
+      </div>
+      <div id="b1" class="bubble"><span class="who">ME</span><span class="av"><span class="person"></span></span><span class="msg" id="m1"></span><span class="tail"></span></div>
+      <div id="b2" class="bubble"><span class="who">BINOM STUDENTS</span><span class="av" style="background:#f6e2d9;color:#e1b9a6"><span class="person"></span></span><span class="msg" id="m2"></span><span class="tail"></span></div>
+    </div>
+    <div id="callLayer">
+      <div class="callbtn" id="cb1" style="left:862px"><svg viewBox="0 0 24 24"><path d="M6 3h3l2 5-2 1a11 11 0 0 0 6 6l1-2 5 2v3a2 2 0 0 1-2 2A16 16 0 0 1 4 5a2 2 0 0 1 2-2" fill="#c1708e"/></svg></div>
+      <div class="callbtn" id="cb2" style="left:1044px"><svg viewBox="0 0 24 24"><path d="M6 3h3l2 5-2 1a11 11 0 0 0 6 6l1-2 5 2v3a2 2 0 0 1-2 2A16 16 0 0 1 4 5a2 2 0 0 1 2-2" fill="#c1708e"/></svg></div>
+      <div id="callText"><span id="ct1"></span><span class="l2" id="ct2"></span></div>
+    </div>
+  </div>
+
+  <!-- Сцена B -->
+  <div id="sceneB" class="layer">
+    <svg id="stars" viewBox="0 0 1920 1200"></svg>
+    <div id="groupB" class="layer">
+      <div id="row"><div class="word" id="w1">that's</div><div class="word" id="w2">SO</div></div>
+      <div class="word" id="w3"></div>
+      <div class="subline" id="s1"></div>
+      <div class="subline" id="s2"></div>
+      <img class="photo" id="p1" src="assets/medina-full.png" alt="">
+      <img class="photo" id="p2" src="assets/medina-sash.png" alt="">
+    </div>
+    <div id="roll"></div>
+  </div>
+
+  <!-- Сцена C -->
+  <div id="sceneC" class="layer">
+    <div class="brush" id="q1"></div>
+    <div class="brush" id="q2"></div>
+    <div class="box" id="box1"><svg viewBox="0 0 370 370"><path d="M8 14 C120 6 250 18 362 8 M14 4 C8 120 18 250 10 366 M2 358 C120 364 250 352 368 360 M356 2 C364 120 352 250 360 368" fill="none" stroke="#111" stroke-width="13" stroke-linecap="round"/></svg></div>
+    <div class="box" id="box2"><svg viewBox="0 0 370 370"><path d="M6 10 C120 16 250 4 364 12 M12 2 C18 120 6 250 14 368 M4 362 C120 354 250 366 366 356 M358 6 C352 120 364 250 356 366" fill="none" stroke="#111" stroke-width="13" stroke-linecap="round"/></svg></div>
+    <div class="lbl" id="l1">OMG YES!</div>
+    <div class="lbl" id="l2">NO. SORRY!</div>
+    <svg id="check" viewBox="0 0 1920 1200"><path id="checkPath" d="M690 800 C720 830 760 880 790 905 C860 790 1000 620 1130 470" fill="none" stroke="#0e0e0e" stroke-width="58" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    <svg id="pen" viewBox="0 0 80 1100">
+      <defs><linearGradient id="barrel" x1="0" x2="1"><stop offset="0" stop-color="#9a9a9a"/><stop offset=".35" stop-color="#f4f4f4"/><stop offset=".6" stop-color="#d0d0d0"/><stop offset="1" stop-color="#7c7c7c"/></linearGradient></defs>
+      <path d="M40 0 L33 34 L47 34 Z" fill="#555"/>
+      <path d="M33 34 L28 120 L52 120 L47 34 Z" fill="#cfcfcf"/>
+      <rect x="22" y="120" width="36" height="980" rx="12" fill="url(#barrel)" opacity=".92"/>
+      <rect x="35" y="160" width="10" height="900" rx="5" fill="#aaa" opacity=".6"/>
+    </svg>
+    <div id="vig"></div>
+  </div>
+
+  <!-- Финал -->
+  <div id="sceneD" class="layer">
+    <div class="credit" id="c1"></div>
+    <div class="credit" id="c2"></div>
+  </div>
+</div>
+
+<script>
+const TEXT = {
+  m1: 'Who are you voting for president this year?',
+  m2: 'Medina for sure',
+  callName: 'Koshembayeva Medina',
+  callSub: 'is calling!',
+  name: 'Medina',
+  sub1: 'VOTE MEDINA FOR PRESIDENT!',
+  sub2: 'WHAT ARE YOU WAITING FOR?',
+  q1: 'HAVE YOU VOTED MEDINA',
+  q2: 'FOR PRESIDENT?',
+  c1: 'MESSAGE APPROVED & ANIMATED BY K.AILINA 9B',
+  c2: 'GO VOTE MEDINA NOW.',
+}
+const DURATION = 29.667
+
+const $ = (id) => document.getElementById(id)
+const clamp = (x, a = 0, b = 1) => Math.min(b, Math.max(a, x))
+const seg = (t, a, b) => clamp((t - a) / (b - a))
+const lerp = (a, b, k) => a + (b - a) * k
+const eOut = (k) => 1 - Math.pow(1 - k, 3)
+const eIn = (k) => k * k * k
+const eInOut = (k) => (k < .5 ? 4 * k * k * k : 1 - Math.pow(-2 * k + 2, 3) / 2)
+const eBack = (k) => { const c = 1.7; return 1 + (c + 1) * Math.pow(k - 1, 3) + c * Math.pow(k - 1, 2) }
+const noise = (n) => { const x = Math.sin(n * 127.1 + 311.7) * 43758.5453; return x - Math.floor(x) }
+function css(el, s) { Object.assign(el.style, s) }
+
+// ---------- статичная разметка ----------
+$('m1').textContent = TEXT.m1
+$('m2').textContent = TEXT.m2
+$('ct1').textContent = TEXT.callName
+$('ct2').textContent = TEXT.callSub
+$('w3').textContent = TEXT.name
+$('q1').textContent = TEXT.q1
+$('q2').textContent = TEXT.q2
+
+// пятна на розовом фоне
+const blobs = []
+for (let i = 0; i < 7; i++) {
+  const b = document.createElement('div'); b.className = 'blob'
+  const size = 500 + noise(i + 1) * 600
+  css(b, { width: size + 'px', height: size + 'px' })
+  $('blobs').appendChild(b); blobs.push({ el: b, size, x: noise(i + 10), y: noise(i + 20), p: noise(i + 30) * 6.28 })
+}
+
+// звёздочки из точек (полутон)
+function star(cx, cy, r, w, rays, fill, rot) {
+  let g = `<g transform="translate(${cx} ${cy}) rotate(${rot})" data-rot="${rot}" data-cx="${cx}" data-cy="${cy}">`
+  for (let i = 0; i < rays; i++) g += `<rect x="${-w / 2}" y="${w * .2}" width="${w}" height="${r}" rx="6" fill="url(#${fill})" transform="rotate(${(360 / rays) * i})"/>`
+  return g + '</g>'
+}
+$('stars').innerHTML =
+  star(1500, 600, 470, 92, 10, 'dotMauve', 8) +
+  star(380, -10, 230, 70, 10, 'dotMauve', 0) +
+  star(-40, 150, 230, 64, 10, 'dotPink', 20) +
+  star(470, 1290, 300, 84, 10, 'dotPeach', 14) +
+  star(1890, 1080, 200, 60, 10, 'dotPeach', 4) +
+  star(1940, -40, 210, 60, 10, 'dotMauve', 10)
+
+// ---------- render(t) ----------
+function render(t) {
+  // какие сцены видны
+  const showA = t < 8.7, showB = t >= 8.55 && t < 18.3, showC = t >= 18.15 && t < 26.3, showD = t >= 25.9
+  css($('sceneA'), { display: showA ? 'block' : 'none' })
+  css($('sceneB'), { display: showB ? 'block' : 'none' })
+  css($('sceneC'), { display: showC ? 'block' : 'none' })
+  css($('sceneD'), { display: showD ? 'block' : 'none', opacity: seg(t, 25.9, 26.2) })
+  if (showA) renderA(t)
+  if (showB) renderB(t)
+  if (showC) renderC(t)
+  if (showD) renderD(t)
+}
+
+function renderA(t) {
+  // фон: медленный «наезд» камеры и плавающие пятна
+  css($('cam'), { transform: `scale(${1 + t * 0.008})` })
+  blobs.forEach((b, i) => {
+    const x = (b.x * 1920 + Math.sin(t * .35 + b.p) * 120) - b.size / 2
+    const y = (b.y * 1200 + Math.cos(t * .3 + b.p) * 90) - b.size / 2
+    css(b.el, { transform: `translate(${x}px,${y}px)` })
+  })
+
+  // телефон с экраном блокировки: выезжает снизу с переворотом
+  const inK = eOut(seg(t, 0.68, 1.15))
+  const outK = eIn(seg(t, 1.9, 2.3))
+  const lock = $('phoneLock')
+  css(lock, {
+    display: t < 2.35 && t > 0.6 ? 'block' : 'none',
+    transform: `perspective(2600px) translate(${outK * 520}px, ${lerp(1250, 0, inK) + outK * 1300}px) rotateX(${lerp(170, 0, inK)}deg) rotate(${outK * 28}deg)`,
+    filter: outK > 0 ? `blur(${outK * 10}px)` : 'none',
+  })
+  // экран «включается» полосой сверху вниз
+  const scanK = seg(t, 1.05, 1.42)
+  css($('lockBlack'), { top: `${scanK * 100}%`, display: scanK < 1 ? 'block' : 'none' })
+  css($('scan'), { top: `calc(${scanK * 100}% - 20px)`, display: scanK > 0 && scanK < 1 ? 'block' : 'none' })
+
+  // телефон с чатом: падает сверху
+  const chatK = eBack(seg(t, 2.0, 2.3))
+  css($('phoneChat'), {
+    display: t >= 2.0 ? 'block' : 'none',
+    transform: `translateY(${lerp(-1500, 0, chatK)}px)`,
+    filter: t < 2.25 ? `blur(${(1 - seg(t, 2.0, 2.25)) * 12}px)` : 'none',
+  })
+
+  // сообщения влетают сбоку
+  const b1 = eBack(seg(t, 3.38, 3.62)), b2 = eBack(seg(t, 4.72, 4.96))
+  css($('b1'), { left: lerp(-1400, 210, b1) + 'px', top: '520px', opacity: t >= 3.38 ? 1 : 0, filter: `blur(${(1 - seg(t, 3.38, 3.55)) * 14}px)` })
+  css($('b2'), { left: lerp(2100, 1040, b2) + 'px', top: '760px', opacity: t >= 4.72 ? 1 : 0, filter: `blur(${(1 - seg(t, 4.72, 4.88)) * 14}px)` })
+
+  // звонок: всё размывается и темнеет, появляется надпись
+  const callK = eOut(seg(t, 6.22, 6.5))
+  css($('cam'), { filter: callK > 0 ? `blur(${callK * 22}px) brightness(${1 - callK * 0.45}) saturate(${1 + callK * .25})` : 'none', transform: `scale(${1 + t * 0.008 + callK * 0.06})` })
+  const textK = seg(t, 6.28, 6.62)
+  // вибрация во время гудков (совпадает со звуком)
+  const buzzing = (t > 6.62 && t < 6.98) || (t > 7.38 && t < 8.15)
+  const jx = buzzing ? (noise(Math.floor(t * 60)) - .5) * 14 : 0
+  const jy = buzzing ? (noise(Math.floor(t * 60) + 99) - .5) * 8 : 0
+  const exitK = eIn(seg(t, 8.38, 8.62))
+  css($('callLayer'), {
+    display: t >= 6.25 ? 'block' : 'none',
+    opacity: Math.min(1, textK * 2),
+    transform: `translate(${jx - exitK * 900}px,${jy}px) scale(${lerp(1.55, 1, eOut(textK))})`,
+    filter: `blur(${(1 - eOut(textK)) * 18 + exitK * 30}px)`,
+  })
+  css($('cb1'), { transform: `scale(${1 + (buzzing ? Math.sin(t * 60) * .04 : 0)})` })
+  css($('cb2'), { transform: `scale(${1 + (buzzing ? Math.cos(t * 60) * .04 : 0)})` })
+  if (exitK > 0) css($('cam'), { filter: `blur(${22 + exitK * 40}px) brightness(${0.55 + exitK})`, transform: `translateX(${-exitK * 900}px) scale(1.3)` })
+  css($('sceneA'), { opacity: 1 - seg(t, 8.5, 8.68) })
+}
+
+function word(el, t0, t, fromY = 40) {
+  const k = seg(t, t0, t0 + 0.22)
+  css(el, { opacity: k > 0 ? Math.min(1, k * 2) : 0, transform: `translateY(${(1 - eOut(k)) * fromY}px) scale(${lerp(0.7, 1, eBack(k))})`, transformOrigin: '0% 80%' })
+}
+function wipe(el, t0, t1, t) {
+  const k = eOut(seg(t, t0, t1))
+  css(el, { opacity: k > 0 ? 1 : 0, clipPath: `inset(-20px ${(1 - k) * 100}% -20px -20px)` })
+}
+function rise(el, t0, t, tColor) {
+  // фото поднимается снизу чёрным силуэтом и «проявляется» в цвет
+  const k = eOut(seg(t, t0, t0 + 0.45))
+  const c = seg(t, tColor, tColor + 0.15)
+  const pop = t > t0 + 0.55 ? Math.sin(clamp((t - t0 - 0.55) / 0.5) * Math.PI) * 0.07 : 0
+  return { k, c, pop }
+}
+
+function renderB(t) {
+  // вход сцены: белая вспышка и горизонтальный «смаз»
+  const enter = seg(t, 8.55, 8.8)
+  css($('sceneB'), { filter: enter < 1 ? `blur(${(1 - enter) * 24}px) brightness(${1 + (1 - enter) * .3})` : 'none' })
+  // звёздочки медленно вращаются
+  $('stars').querySelectorAll('g').forEach((g, i) => {
+    const r = +g.dataset.rot + (i % 2 ? -1 : 1) * t * 1.6
+    g.setAttribute('transform', `translate(${g.dataset.cx} ${g.dataset.cy}) rotate(${r})`)
+  })
+  const round2 = t >= 12.3
+  const t0 = round2 ? 12.9 : 9.0
+  const w1 = $('w1'), w2 = $('w2'), w3 = $('w3')
+  word(w1, t0, t)
+  word(w2, round2 ? 13.45 : 9.3, t)
+  word(w3, round2 ? 13.7 : 9.62, t)
+  // «SO» стоит сразу после «that's»
+  const s1 = $('s1'), s2 = $('s2')
+  s1.textContent = TEXT.sub1; s2.textContent = TEXT.sub2
+  if (!round2) { wipe(s1, 9.88, 10.25, t); css(s2, { opacity: 0 }) } else { wipe(s2, 14.05, 14.45, t); css(s1, { opacity: 0 }) }
+
+  // фото
+  const p1 = $('p1'), p2 = $('p2')
+  if (!round2) {
+    const r = rise(p1, 10.25, t, 10.5)
+    css(p1, { display: 'block', transform: `translateY(${(1 - r.k) * 1100}px) scale(${0.82 + r.k * 0.18 + r.pop})`, filter: `brightness(${r.c}) ${getComputedStyle(p1).getPropertyValue('--f')}`, opacity: t >= 10.25 ? 1 : 0 })
+    css(p2, { display: 'none' })
+  } else {
+    const r = rise(p2, 14.35, t, 14.82)
+    const drift = seg(t, 16.75, 17.0)
+    css(p2, { display: 'block', transform: `translate(${drift * 40}px, ${(1 - r.k) * 1300 + drift * 30}px) scale(${0.9 + r.k * 0.1 + r.pop * .6})`, filter: `brightness(${r.c})`, opacity: t >= 14.35 ? 1 : 0 })
+    css(p1, { display: 'none' })
+  }
+  // уход вниз
+  const out = round2 ? eIn(seg(t, 17.0, 17.45)) : eIn(seg(t, 11.8, 12.25))
+  css($('groupB'), { transform: `translateY(${out * 1100}px)`, filter: out > 0 ? `blur(${out * 8}px)` : 'none' })
+  // переход «свёрнутая бумага»
+  const roll = eInOut(seg(t, 18.02, 18.28))
+  css($('roll'), { display: roll > 0 ? 'block' : 'none', left: lerp(-2500, 0, roll) + 'px' })
+}
+
+function renderC(t) {
+  // текст «пишется» кистью слева направо
+  const k1 = seg(t, 19.15, 19.85), k2 = seg(t, 19.45, 19.95)
+  css($('q1'), { clipPath: `inset(-40px ${100 - k1 * 100}% -40px -40px)`, opacity: k1 > 0 ? 1 : 0 })
+  css($('q2'), { clipPath: `inset(-40px ${100 - k2 * 100}% -40px -40px)`, opacity: k2 > 0 ? 1 : 0 })
+  // квадраты и подписи
+  const bk = seg(t, 20.45, 20.9)
+  ;['box1', 'box2'].forEach((id, i) => css($(id), { opacity: eOut(seg(t, 20.45 + i * .08, 20.85 + i * .08)), transform: `scale(${lerp(1.08, 1, eOut(bk))})` }))
+  css($('l1'), { opacity: seg(t, 20.75, 21.0) }); css($('l2'), { opacity: seg(t, 20.8, 21.05) })
+
+  // галочка
+  const path = $('checkPath'), len = path.getTotalLength()
+  const ck = eInOut(seg(t, 22.92, 23.28))
+  css(path, { strokeDasharray: len, strokeDashoffset: len * (1 - ck) })
+
+  // ручка: путь кончика
+  const keys = [
+    [21.15, 1980, 1400], [21.65, 1520, 1020], [21.9, 1490, 990], [22.15, 1530, 1010], [22.45, 1500, 980],
+    [22.88, 690, 800],
+  ]
+  let tip
+  if (t <= 22.88) tip = interp(keys, t)
+  else if (t <= 23.28) { const p = path.getPointAtLength(len * ck); tip = [p.x, p.y] }
+  else tip = interp([[23.28, 1130, 470], [23.9, 1350, 760], [24.2, 1420, 820], [24.5, 1380, 790], [24.85, 1440, 840], [25.7, 2050, 1500]], t)
+  const ang = 14 + Math.sin(t * 3) * 2
+  css($('pen'), { display: t > 21.1 && t < 25.8 ? 'block' : 'none', transform: `translate(${tip[0] - 40}px,${tip[1]}px) rotate(${-ang}deg)` })
+}
+function interp(keys, t) {
+  if (t <= keys[0][0]) return [keys[0][1], keys[0][2]]
+  for (let i = 1; i < keys.length; i++) if (t <= keys[i][0]) {
+    const k = eInOut(seg(t, keys[i - 1][0], keys[i][0]))
+    return [lerp(keys[i - 1][1], keys[i][1], k), lerp(keys[i - 1][2], keys[i][2], k)]
+  }
+  const l = keys[keys.length - 1]; return [l[1], l[2]]
+}
+
+function renderD(t) {
+  const n1 = Math.round(seg(t, 26.85, 27.4) * TEXT.c1.length)
+  const n2 = Math.round(seg(t, 27.4, 27.6) * TEXT.c2.length)
+  $('c1').textContent = TEXT.c1.slice(0, n1)
+  $('c2').textContent = TEXT.c2.slice(0, n2)
+}
+
+window.render = render
+window.DURATION = DURATION
+render(+(new URLSearchParams(location.search).get('t') || 0))
+</script>
+</body>
+</html>

@@ -16,3 +16,6 @@ next-env.d.ts
 # Local preview screenshots
 preview/
 out/
+# Video render output
+video/*/out/
+video/*/node_modules
