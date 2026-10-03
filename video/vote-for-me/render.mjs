@@ -13,6 +13,7 @@ const out = path.join(dir, 'out')
 const FPS = 30
 const args = process.argv.slice(2)
 const stills = args[0] === '--stills' ? args.slice(1).map(Number) : null
+const composeOnly = args[0] === '--compose' // только пересобрать mp4 из готовых кадров
 
 const browser = await chromium.launch({
   executablePath: process.env.CHROMIUM || '/opt/pw-browsers/chromium',
@@ -23,7 +24,7 @@ await page.goto('file://' + path.join(dir, 'index.html'))
 await page.evaluate(() => document.fonts.ready)
 await page.waitForTimeout(500)
 
-if (stills) {
+if (stills && !composeOnly) {
   fs.mkdirSync(path.join(out, 'stills'), { recursive: true })
   for (const t of stills) {
     await page.evaluate((t) => window.render(t), t)
@@ -35,9 +36,11 @@ if (stills) {
 
 const duration = await page.evaluate(() => window.DURATION)
 const frames = path.join(out, 'frames')
+if (!composeOnly) {
 fs.rmSync(frames, { recursive: true, force: true })
 fs.mkdirSync(frames, { recursive: true })
-const total = Math.round(duration * FPS)
+}
+const total = composeOnly ? 0 : Math.round(duration * FPS)
 for (let i = 0; i < total; i++) {
   await page.evaluate((t) => window.render(t), i / FPS)
   await page.screenshot({ path: path.join(frames, String(i).padStart(4, '0') + '.jpg'), type: 'jpeg', quality: 92 })
@@ -46,7 +49,7 @@ for (let i = 0; i < total; i++) {
 
 // подпись для вертикальной версии (как в референсе)
 const cap = await browser.newPage({ viewport: { width: 1080, height: 1920 } })
-await cap.setContent(`<body style="margin:0;background:transparent"><div style="position:absolute;left:0;right:0;top:300px;text-align:center;font:600 54px/1.25 Inter,'Noto Color Emoji',sans-serif;color:#fff;text-shadow:0 2px 6px rgba(0,0,0,.5)">POV: you let me animate<br>your campaign 🙈</div></body>`)
+await cap.setContent(`<body style="margin:0;background:transparent"><div style="position:absolute;left:0;right:0;top:300px;text-align:center;font:700 52px/1.25 'Liberation Sans',Arial,sans-serif;color:#fff;text-shadow:0 2px 6px rgba(0,0,0,.5)">POV: you let me animate<br>your campaign <span style=\"font-family:'Noto Color Emoji'\">🙈</span></div></body>`)
 await cap.screenshot({ path: path.join(out, 'caption.png'), omitBackground: true })
 await browser.close()
 
